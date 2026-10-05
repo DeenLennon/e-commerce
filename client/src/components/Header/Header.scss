@@ -1,0 +1,287 @@
+.store-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================================
+   TOP HEADER
+============================================================ */
+
+.store-header__top {
+    background: #111827;
+    color: white;
+}
+
+.store-header__container {
+    width: min(1200px, calc(100% - 32px));
+    min-height: 72px;
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+/* ============================================================
+   LOGO
+============================================================ */
+
+.store-header__logo {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: white;
+    text-decoration: none;
+    font-size: 21px;
+    white-space: nowrap;
+}
+
+.store-header__logo span {
+    color: #f68b1e;
+    font-weight: 900;
+}
+
+.store-header__logo strong {
+    font-weight: 800;
+}
+
+/* ============================================================
+   SEARCH
+============================================================ */
+
+.store-header__search {
+    flex: 1;
+    max-width: 650px;
+    height: 43px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border-radius: 5px;
+    background: white;
+}
+
+.store-header__search > svg {
+    margin-left: 13px;
+    color: #777;
+    flex-shrink: 0;
+}
+
+.store-header__search input {
+    flex: 1;
+    height: 100%;
+    padding: 0 12px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+.store-header__search button {
+    height: 100%;
+    padding: 0 20px;
+    border: none;
+    background: #f68b1e;
+    color: white;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+/* ============================================================
+   ACCOUNT
+============================================================ */
+
+.store-header__account {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: white;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.store-header__account > svg {
+    font-size: 22px;
+}
+
+.store-header__account small {
+    display: block;
+    color: #d1d5db;
+    font-size: 10px;
+}
+
+.store-header__account span {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* ============================================================
+   CART
+============================================================ */
+
+.store-header__cart {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    text-decoration: none;
+}
+
+.store-header__cart-icon {
+    position: relative;
+    font-size: 24px;
+}
+
+.store-header__cart-icon span {
+    position: absolute;
+    top: -8px;
+    right: -9px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f68b1e;
+    font-size: 10px;
+}
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+
+.store-header__nav {
+    background: white;
+}
+
+.store-header__nav-container {
+    width: min(1200px, calc(100% - 32px));
+    min-height: 45px;
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.store-header__nav a {
+    color: #333;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.store-header__nav a:hover {
+    color: #f68b1e;
+}
+
+/* ============================================================
+   MOBILE MENU BUTTON
+============================================================ */
+
+.store-header__mobile-button {
+    display: none;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* ============================================================
+   MOBILE MENU
+============================================================ */
+
+.store-header__mobile-menu {
+    display: none;
+}
+
+/* ============================================================
+   TABLET
+============================================================ */
+
+@media (max-width: 900px) {
+    .store-header__container {
+        gap: 15px;
+    }
+
+    .store-header__account div {
+        display: none;
+    }
+
+    .store-header__nav-container {
+        gap: 18px;
+    }
+}
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 650px) {
+    .store-header__container {
+        width: calc(100% - 20px);
+        min-height: 62px;
+        gap: 12px;
+    }
+
+    .store-header__mobile-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .store-header__logo {
+        font-size: 17px;
+    }
+
+    .store-header__search {
+        position: absolute;
+        top: 62px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        max-width: none;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+    }
+
+    .store-header__search button {
+        padding: 0 12px;
+        font-size: 12px;
+    }
+
+    .store-header__account {
+        margin-left: auto;
+    }
+
+    .store-header__cart strong {
+        display: none;
+    }
+
+    .store-header__nav {
+        display: none;
+    }
+
+    .store-header__mobile-menu {
+        display: flex;
+        flex-direction: column;
+        padding: 12px 15px;
+        border-top: 1px solid #eee;
+        background: white;
+    }
+
+    .store-header__mobile-menu a {
+        padding: 14px 5px;
+        border-bottom: 1px solid #eee;
+        color: #333;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .store-header__mobile-menu a:last-child {
+        border-bottom: none;
+    }
+}

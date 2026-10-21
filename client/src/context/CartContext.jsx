@@ -34,7 +34,17 @@ export const CartProvider = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        refreshCartCount();
+        let active = true;
+
+        Promise.resolve().then(() => {
+            if (active) {
+                refreshCartCount();
+            }
+        });
+
+        return () => {
+            active = false;
+        };
     }, [refreshCartCount]);
 
     const increaseCartCount = (quantity = 1) => {
@@ -70,6 +80,6 @@ export const useCart = () => {
             "useCart must be used inside CartProvider"
         );
     }
-    
+
     return context;
 };

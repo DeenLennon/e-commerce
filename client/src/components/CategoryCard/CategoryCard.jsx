@@ -1,6 +1,10 @@
 
 import React from "react";
-import { ArrowForward, ShoppingBag } from "@mui/icons-material";
+import {
+    ArrowForward,
+    ShoppingBag,
+} from "@mui/icons-material";
+import { getImageUrl } from "../../utils/imageUrl";
 import "./CategoryCard.scss";
 
 const CategoryCard = ({
@@ -11,13 +15,35 @@ const CategoryCard = ({
     const {
         name,
         image,
+        image_url,
         product_count,
         products_count,
         description,
+        latest_product_image,
+        latest_product,
     } = category;
 
     const productCount =
         product_count ?? products_count ?? 0;
+
+    // Prefer the latest product's image.
+    const productImage =
+        latest_product_image ||
+        latest_product?.featured_image ||
+        latest_product?.image_url ||
+        latest_product?.images?.find(
+            (img) => img.is_primary
+        )?.image_url ||
+        latest_product?.images?.[0]?.image_url ||
+        latest_product?.images?.[0]?.url;
+
+    // Fall back to the category image.
+    const imageSource =
+        productImage || image_url || image;
+
+    const imageUrl = imageSource
+        ? getImageUrl(imageSource)
+        : "";
 
     const handleClick = () => {
         if (onClick) {
@@ -37,16 +63,21 @@ const CategoryCard = ({
                     (e.key === "Enter" ||
                         e.key === " ")
                 ) {
+                    e.preventDefault();
                     handleClick();
                 }
             }}
         >
             <div className="category-card__image">
-                {image ? (
+                {imageUrl ? (
                     <img
-                        src={image}
-                        alt={name}
+                        src={imageUrl}
+                        alt={`${name} category`}
                         loading="lazy"
+                        onError={(e) => {
+                            e.currentTarget.style.display =
+                                "none";
+                        }}
                     />
                 ) : (
                     <div className="category-card__fallback">

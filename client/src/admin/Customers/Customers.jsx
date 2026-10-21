@@ -1,4 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, {
+  useMemo,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+
+import { getCustomers, createCustomer } from "../../services/customerService";
 import {
   Search,
   FilterList,
@@ -22,111 +29,120 @@ import {
 
 import "./Customers.scss";
 
-const customersData = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john.doe@gmail.com",
-    phone: "+234 801 234 5678",
-    avatar: "JD",
-    status: "Active",
-    orders: 24,
-    spent: 845000,
-    joined: "Jan 12, 2026",
-    location: "Lagos, Nigeria",
+const initialCustomerForm = {
+  first_name: "",
+  last_name: "",
+  email: "",
+  phone: "",
+  password: "",
+  address: {
+    address: "",
+    city: "",
+    state: "",
+    country: "Nigeria",
+    postal_code: "",
+    phone: "",
+    is_default: true,
   },
-  {
-    id: 2,
-    name: "Sarah Williams",
-    email: "sarah.williams@gmail.com",
-    phone: "+234 803 445 6677",
-    avatar: "SW",
-    status: "Active",
-    orders: 18,
-    spent: 624500,
-    joined: "Feb 03, 2026",
-    location: "Abuja, Nigeria",
-  },
-  {
-    id: 3,
-    name: "Michael Johnson",
-    email: "michael.johnson@gmail.com",
-    phone: "+234 805 123 4567",
-    avatar: "MJ",
-    status: "Inactive",
-    orders: 9,
-    spent: 289000,
-    joined: "Feb 19, 2026",
-    location: "Port Harcourt, Nigeria",
-  },
-  {
-    id: 4,
-    name: "Grace Anderson",
-    email: "grace.anderson@gmail.com",
-    phone: "+234 807 654 3210",
-    avatar: "GA",
-    status: "Active",
-    orders: 32,
-    spent: 1250000,
-    joined: "Mar 08, 2026",
-    location: "Lagos, Nigeria",
-  },
-  {
-    id: 5,
-    name: "David Brown",
-    email: "david.brown@gmail.com",
-    phone: "+234 809 876 5432",
-    avatar: "DB",
-    status: "Blocked",
-    orders: 5,
-    spent: 115000,
-    joined: "Mar 21, 2026",
-    location: "Ibadan, Nigeria",
-  },
-  {
-    id: 6,
-    name: "Mary Thompson",
-    email: "mary.thompson@gmail.com",
-    phone: "+234 810 222 3344",
-    avatar: "MT",
-    status: "Active",
-    orders: 27,
-    spent: 935000,
-    joined: "Apr 02, 2026",
-    location: "Lagos, Nigeria",
-  },
-  {
-    id: 7,
-    name: "Daniel Wilson",
-    email: "daniel.wilson@gmail.com",
-    phone: "+234 812 444 5566",
-    avatar: "DW",
-    status: "Active",
-    orders: 14,
-    spent: 412000,
-    joined: "Apr 17, 2026",
-    location: "Benin City, Nigeria",
-  },
-  {
-    id: 8,
-    name: "Jennifer Davis",
-    email: "jennifer.davis@gmail.com",
-    phone: "+234 814 777 8899",
-    avatar: "JD",
-    status: "Inactive",
-    orders: 7,
-    spent: 186000,
-    joined: "May 06, 2026",
-    location: "Enugu, Nigeria",
-  },
-];
+};
+
 
 const Customers = () => {
-  const [customers, setCustomers] = useState(customersData);
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [activeMenu, setActiveMenu] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [savingCustomer, setSavingCustomer] = useState(false);
+  const [formError, setFormError] = useState("");
+
+  const [newCustomer, setNewCustomer] = useState(initialCustomerForm);
+
+  const fetchCustomers = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await getCustomers();
+
+      // Support common API response structures.
+      const users =
+        response?.data?.customers ??
+        response?.customers ??
+        response?.data?.users ??
+        response?.users ??
+        response?.data ??
+        [];
+
+      if (!Array.isArray(users)) {
+        throw new Error(
+          "The server returned an unexpected customers response."
+        );
+      }
+
+      const formattedCustomers = users.map((user) => {
+        const firstName = user.first_name ?? "";
+        const lastName = user.last_name ?? "";
+
+        const name =
+          user.name ||
+          `${firstName} ${lastName}`.trim() ||
+          user.email ||
+          "Unnamed Customer";
+
+        return {
+          id: user.id,
+          name,
+          email: user.email ?? "",
+          phone: user.phone ?? "Not provided",
+          avatar: name
+            .split(/\s+/)
+            .filter(Boolean)
+            .map((part) => part[0])
+            .join("")
+            .slice(0, 2)
+            .toUpperCase(),
+          status: user.status
+            ? user.status.charAt(0).toUpperCase() +
+            user.status.slice(1).toLowerCase()
+            : "Active",
+          orders: Number(user.orders_count ?? user.orders ?? 0),
+          spent: Number(user.total_spent ?? user.spent ?? 0),
+          joined: user.created_at
+            ? new Date(user.created_at).toLocaleDateString(
+              "en-NG",
+              {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              }
+            )
+            : "Not available",
+          location: user.location ?? "Not provided",
+        };
+      });
+
+      setCustomers(formattedCustomers);
+    } catch (err) {
+      console.error("Failed to fetch customers:", err);
+
+      setError(
+        err.response?.data?.message ||
+        err.message ||
+        "Unable to load customers."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCustomers();
+  }, [fetchCustomers]);
 
   const filteredCustomers = useMemo(() => {
     return customers.filter((customer) => {
@@ -177,6 +193,53 @@ const Customers = () => {
     setActiveMenu(null);
   };
 
+
+  const handleAddCustomer = async (e) => {
+    e.preventDefault();
+
+    try {
+      setSavingCustomer(true);
+      setFormError("");
+
+      // await createCustomer(newCustomer);
+
+      // setNewCustomer({
+      //   first_name: "",
+      //   last_name: "",
+      //   email: "",
+      //   phone: "",
+      //   password: "",
+      // });
+
+      // setShowAddModal(false);
+
+
+      await createCustomer(newCustomer);
+
+      // Reset every field, including the nested address fields.
+      setNewCustomer(initialCustomerForm);
+
+      setShowAddModal(false);
+      setFormError("");
+
+      // Refresh the table from MySQL.
+      await fetchCustomers();
+
+
+      // Refresh the table from MySQL.
+      await fetchCustomers();
+    } catch (err) {
+      console.error("Failed to create customer:", err);
+
+      setFormError(
+        err.response?.data?.message ||
+        "Unable to create customer. Please try again."
+      );
+    } finally {
+      setSavingCustomer(false);
+    }
+  };
+
   return (
     <div className="customers-page">
 
@@ -190,7 +253,13 @@ const Customers = () => {
           </p>
         </div>
 
-        <button className="add-customer-btn">
+        <button
+          className="add-customer-btn"
+          onClick={() => {
+            setFormError("");
+            setShowAddModal(true);
+          }}
+        >
           <PersonAdd />
           Add Customer
         </button>
@@ -336,7 +405,26 @@ const Customers = () => {
 
             <tbody>
 
-              {filteredCustomers.length > 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={8}>
+                    <div className="empty-state">
+                      <p>Loading customers...</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan={8}>
+                    <div className="empty-state">
+                      <p>{error}</p>
+                      <button onClick={fetchCustomers}>
+                        Retry
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredCustomers.length > 0 ? (
                 filteredCustomers.map((customer) => (
 
                   <tr key={customer.id}>
@@ -643,6 +731,244 @@ const Customers = () => {
         </div>
 
       )}
+
+
+      {showAddModal && (
+        <div
+          className="customer-modal-overlay add-customer-overlay"
+          onClick={() => {
+            if (!savingCustomer) setShowAddModal(false);
+          }}
+        >
+          <div
+            className="customer-modal add-customer-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-header">
+              <div>
+                <h2>Add Customer</h2>
+                <p>Enter the new customer's details.</p>
+              </div>
+
+              <button
+                type="button"
+                disabled={savingCustomer}
+                onClick={() => setShowAddModal(false)}
+              >
+                <Close />
+              </button>
+            </div>
+
+
+            <form className="add-customer-form" onSubmit={handleAddCustomer}>
+              <div className="form-intro">
+                <div className="form-intro-icon">
+                  <PersonAdd />
+                </div>
+                <div>
+                  <h3>Customer information</h3>
+                  <p>Enter the customer's details to create an account.</p>
+                </div>
+              </div>
+
+              <div className="form-grid">
+                <label className="form-field">
+                  <span>First name <b>*</b></span>
+                  <input
+                    type="text"
+                    placeholder="e.g. John"
+                    autoComplete="given-name"
+                    required
+                    value={newCustomer.first_name}
+                    onChange={(e) =>
+                      setNewCustomer((prev) => ({
+                        ...prev,
+                        first_name: e.target.value,
+                      }))
+                    }
+                  />
+                </label>
+
+                <label className="form-field">
+                  <span>Last name <b>*</b></span>
+                  <input
+                    type="text"
+                    placeholder="e.g. Doe"
+                    autoComplete="family-name"
+                    required
+                    value={newCustomer.last_name}
+                    onChange={(e) =>
+                      setNewCustomer((prev) => ({
+                        ...prev,
+                        last_name: e.target.value,
+                      }))
+                    }
+                  />
+                </label>
+
+                <label className="form-field form-field-full">
+                  <span>Email address <b>*</b></span>
+                  <input
+                    type="email"
+                    placeholder="customer@example.com"
+                    autoComplete="email"
+                    required
+                    value={newCustomer.email}
+                    onChange={(e) =>
+                      setNewCustomer((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
+                  />
+                </label>
+
+                <label className="form-field">
+                  <span>Phone number</span>
+                  <input
+                    type="tel"
+                    placeholder="+234 800 000 0000"
+                    autoComplete="tel"
+                    value={newCustomer.phone}
+                    onChange={(e) =>
+                      setNewCustomer((prev) => ({
+                        ...prev,
+                        phone: e.target.value,
+                      }))
+                    }
+                  />
+                </label>
+
+                <label className="form-field">
+                  <span>City / Location</span>
+                  <input
+                    type="text"
+                    placeholder="e.g. Ikeja, Lagos"
+                    autoComplete="address-level2"
+                    value={newCustomer.address.city}
+                    onChange={(e) =>
+                      setNewCustomer((prev) => ({
+                        ...prev,
+                        address: {
+                          ...prev.address,
+                          city: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </label>
+
+
+                <label className="form-field form-field-full">
+                  <span>Street address <b>*</b></span>
+                  <input
+                    type="text"
+                    placeholder="e.g. 12 Market Road"
+                    autoComplete="street-address"
+                    required
+                    value={newCustomer.address.address}
+                    onChange={(e) =>
+                      setNewCustomer((prev) => ({
+                        ...prev,
+                        address: {
+                          ...prev.address,
+                          address: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </label>
+
+                <label className="form-field">
+                  <span>State <b>*</b></span>
+                  <input
+                    type="text"
+                    placeholder="e.g. Ogun"
+                    autoComplete="address-level1"
+                    required
+                    value={newCustomer.address.state}
+                    onChange={(e) =>
+                      setNewCustomer((prev) => ({
+                        ...prev,
+                        address: {
+                          ...prev.address,
+                          state: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </label>
+
+                <label className="form-field">
+                  <span>Delivery phone number <b>*</b></span>
+                  <input
+                    type="tel"
+                    placeholder="e.g. 09032456789"
+                    autoComplete="tel"
+                    required
+                    value={newCustomer.address.phone}
+                    onChange={(e) =>
+                      setNewCustomer((prev) => ({
+                        ...prev,
+                        address: {
+                          ...prev.address,
+                          phone: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </label>
+
+                <label className="form-field form-field-full">
+                  <span>Temporary password <b>*</b></span>
+                  <input
+                    type="password"
+                    placeholder="At least 8 characters"
+                    autoComplete="new-password"
+                    minLength={8}
+                    required
+                    value={newCustomer.password}
+                    onChange={(e) =>
+                      setNewCustomer((prev) => ({
+                        ...prev,
+                        password: e.target.value,
+                      }))
+                    }
+                  />
+                  <small>Use a temporary password and share it securely with the customer.</small>
+                </label>
+              </div>
+
+              {formError && (
+                <div className="form-error" role="alert">
+                  {formError}
+                </div>
+              )}
+
+              <div className="modal-footer add-customer-footer">
+                <button
+                  type="button"
+                  className="secondary-btn"
+                  disabled={savingCustomer}
+                  onClick={() => setShowAddModal(false)}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="primary-btn"
+                  disabled={savingCustomer}
+                >
+                  {savingCustomer ? "Creating account..." : "Create Customer"}
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      )}
+
 
     </div>
   );

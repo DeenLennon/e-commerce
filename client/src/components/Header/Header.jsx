@@ -1,6 +1,14 @@
+
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+    Link,
+    useNavigate,
+    useSearchParams,
+    useLocation,
+} from "react-router-dom";
+
 import { useCart } from "../../context/CartContext";
+
 import {
     FiMenu,
     FiSearch,
@@ -13,73 +21,102 @@ import "./Header.scss";
 
 const Header = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const [searchParams] = useSearchParams();
 
-    const {
-        cartCount,
-    } = useCart();
+    const { cartCount } = useCart();
 
-    const [search, setSearch] = useState("");
+    const [search, setSearch] = useState(
+        searchParams.get("search") || ""
+    );
+
     const [mobileOpen, setMobileOpen] = useState(false);
 
+    // Keep the input synchronized with URL changes.
+    useEffect(() => {
+        setSearch(searchParams.get("search") || "");
+    }, [searchParams]);
+
+    // Debounce search by 500ms, matching Products.jsx.
+    useEffect(() => {
+        const value = search.trim();
+
+        if (!value) return;
+
+        const timer = setTimeout(() => {
+            const params = new URLSearchParams(
+                location.pathname === "/products"
+                    ? location.search
+                    : ""
+            );
+
+            params.set("search", value);
+            params.delete("page");
+
+            navigate(`/products?${params.toString()}`);
+            setMobileOpen(false);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [search, navigate, location.pathname, location.search]);
+
+    // Submit immediately when Enter or Search is pressed.
     const handleSearch = (event) => {
         event.preventDefault();
 
         const value = search.trim();
 
-        if (!value) {
-            navigate("/products");
-            return;
+        const params = new URLSearchParams(
+            location.pathname === "/products"
+                ? location.search
+                : ""
+        );
+
+        if (value) {
+            params.set("search", value);
+        } else {
+            params.delete("search");
         }
 
+        params.delete("page");
+
         navigate(
-            `/products?search=${encodeURIComponent(
-                value
-            )}`
+            params.toString()
+                ? `/products?${params.toString()}`
+                : "/products"
         );
 
         setMobileOpen(false);
     };
 
+    const closeMobileMenu = () => {
+        setMobileOpen(false);
+    };
+
     return (
         <header className="store-header">
-
             <div className="store-header__top">
-
                 <div className="store-header__container">
-
-                    {/* MOBILE MENU */}
-
                     <button
                         type="button"
                         className="store-header__mobile-button"
                         onClick={() =>
-                            setMobileOpen(
-                                !mobileOpen
-                            )
+                            setMobileOpen((previous) => !previous)
                         }
                         aria-label="Toggle menu"
+                        aria-expanded={mobileOpen}
                     >
-                        {mobileOpen ? (
-                            <FiX />
-                        ) : (
-                            <FiMenu />
-                        )}
+                        {mobileOpen ? <FiX /> : <FiMenu />}
                     </button>
-
-                    {/* LOGO */}
 
                     <Link
                         to="/"
                         className="store-header__logo"
-                        onClick={() =>
-                            setMobileOpen(false)
-                        }
+                        onClick={closeMobileMenu}
                     >
-                        <span>TECH</span>
-                        <strong>STORE</strong>
+                        <span>DIRECT</span>
+                        <strong>LINKS</strong>
                     </Link>
-
-                    {/* SEARCH */}
 
                     <form
                         className="store-header__search"
@@ -92,10 +129,9 @@ const Header = () => {
                             placeholder="Search products..."
                             value={search}
                             onChange={(event) =>
-                                setSearch(
-                                    event.target.value
-                                )
+                                setSearch(event.target.value)
                             }
+                            aria-label="Search products"
                         />
 
                         <button type="submit">
@@ -103,26 +139,16 @@ const Header = () => {
                         </button>
                     </form>
 
-                    {/* ACCOUNT */}
-
                     <Link
                         to="/login"
                         className="store-header__account"
                     >
                         <FiUser />
-
                         <div>
-                            <small>
-                                Hello, Sign in
-                            </small>
-
-                            <span>
-                                Account
-                            </span>
+                            <small>Hello, Sign in</small>
+                            <span>Account</span>
                         </div>
                     </Link>
-
-                    {/* CART */}
 
                     <Link
                         to="/cart"
@@ -130,119 +156,71 @@ const Header = () => {
                     >
                         <div className="store-header__cart-icon">
                             <FiShoppingCart />
-
                             {cartCount > 0 && (
-                                <span>
-                                    {cartCount}
-                                </span>
+                                <span>{cartCount}</span>
                             )}
                         </div>
-
-                        <strong>
-                            Cart
-                        </strong>
+                        <strong>Cart</strong>
                     </Link>
-
                 </div>
-
             </div>
 
-            {/* DESKTOP NAVIGATION */}
-
             <nav className="store-header__nav">
-
                 <div className="store-header__nav-container">
-
-                    <Link to="/products">
-                        All Products
-                    </Link>
-
+                    <Link to="/products">All Products</Link>
                     <Link to="/products?category=smartphones">
                         Smartphones
                     </Link>
-
                     <Link to="/products?category=laptops">
                         Laptops
                     </Link>
-
                     <Link to="/products?category=accessories">
                         Accessories
                     </Link>
-
                     <Link to="/products?featured=true">
                         Featured
                     </Link>
-
-                    <Link to="/cart">
-                        My Cart
-                    </Link>
-
+                    <Link to="/cart">My Cart</Link>
                 </div>
-
             </nav>
-
-            {/* MOBILE NAVIGATION */}
 
             {mobileOpen && (
                 <div className="store-header__mobile-menu">
-
-                    <Link
-                        to="/products"
-                        onClick={() =>
-                            setMobileOpen(false)
-                        }
-                    >
+                    <Link to="/products" onClick={closeMobileMenu}>
                         All Products
                     </Link>
-
                     <Link
                         to="/products?category=smartphones"
-                        onClick={() =>
-                            setMobileOpen(false)
-                        }
+                        onClick={closeMobileMenu}
                     >
                         Smartphones
                     </Link>
-
                     <Link
                         to="/products?category=laptops"
-                        onClick={() =>
-                            setMobileOpen(false)
-                        }
+                        onClick={closeMobileMenu}
                     >
                         Laptops
                     </Link>
-
                     <Link
                         to="/products?category=accessories"
-                        onClick={() =>
-                            setMobileOpen(false)
-                        }
+                        onClick={closeMobileMenu}
                     >
                         Accessories
                     </Link>
-
                     <Link
-                        to="/cart"
-                        onClick={() =>
-                            setMobileOpen(false)
-                        }
+                        to="/products?featured=true"
+                        onClick={closeMobileMenu}
                     >
+                        Featured
+                    </Link>
+                    <Link to="/cart" onClick={closeMobileMenu}>
                         My Cart
                     </Link>
-
-                    <Link
-                        to="/login"
-                        onClick={() =>
-                            setMobileOpen(false)
-                        }
-                    >
+                    <Link to="/login" onClick={closeMobileMenu}>
                         Login / Account
                     </Link>
-
                 </div>
             )}
-
         </header>
     );
 };

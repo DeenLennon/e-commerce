@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useAuth } from "../../context/AuthContext";
+import useAuth from "../../hooks/useAuth";
 
 import "./Login.scss";
 
@@ -79,7 +79,7 @@ const Login = () => {
 
         <div className="login-header">
           <div className="login-logo">
-            E
+            DL
           </div>
 
           <h1>Welcome Back</h1>

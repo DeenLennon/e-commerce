@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useLocation } from "react-router-dom";
 
 import Header from "../../components/Header/Header";
 
@@ -27,21 +27,20 @@ import ProductCard from "../../components/ProductCard/ProductCard";
 import "./Products.scss";
 
 const Products = () => {
+
+    const location = useLocation();
+
     const [searchParams, setSearchParams] =
         useSearchParams();
 
-    // ========================================================
     // PRODUCTS
-    // ========================================================
 
     const [products, setProducts] = useState([]);
 
     const [categories, setCategories] =
         useState([]);
 
-    // ========================================================
     // LOADING / ERROR
-    // ========================================================
 
     const [loading, setLoading] =
         useState(true);
@@ -52,9 +51,7 @@ const Products = () => {
     const [error, setError] =
         useState("");
 
-    // ========================================================
     // PAGINATION
-    // ========================================================
 
     const [page, setPage] = useState(
         Number(searchParams.get("page")) || 1
@@ -70,15 +67,9 @@ const Products = () => {
             hasPreviousPage: false,
         });
 
-    // ========================================================
     // FILTERS
-    // ========================================================
 
-    const [search, setSearch] = useState(
-        searchParams.get("search") || ""
-    );
-
-    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const search = searchParams.get("search") || "";
 
     const [category, setCategory] =
         useState(
@@ -99,26 +90,20 @@ const Products = () => {
         searchParams.get("sort") || "latest"
     );
 
-    // ========================================================
     // ADD TO CART
-    // ========================================================
 
     const [
         addingProductId,
         setAddingProductId,
     ] = useState(null);
 
-    // ========================================================
     // CART CONTEXT
-    // ========================================================
 
     const {
         refreshCartCount,
     } = useCart();
 
-    // ========================================================
     // TOAST
-    // ========================================================
 
     const [
         toastVisible,
@@ -139,9 +124,7 @@ const Products = () => {
         }, 3000);
     };
 
-    // ========================================================
     // LOAD CATEGORIES
-    // ========================================================
 
     useEffect(() => {
         const loadCategories = async () => {
@@ -169,9 +152,7 @@ const Products = () => {
         loadCategories();
     }, []);
 
-    // ========================================================
     // LOAD PRODUCTS
-    // ========================================================
 
     useEffect(() => {
         const loadProducts = async () => {
@@ -183,7 +164,7 @@ const Products = () => {
                     await getProducts({
                         page,
                         limit: 12,
-                        search: debouncedSearch,
+                        search: search,
                         category,
                         minPrice,
                         maxPrice,
@@ -225,16 +206,25 @@ const Products = () => {
         loadProducts();
     }, [
         page,
-        debouncedSearch,
+        search,
         category,
         minPrice,
         maxPrice,
         sort,
     ]);
 
-    // ========================================================
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+
+        setCategory(params.get("category") || "");
+        setMinPrice(params.get("minPrice") || "");
+        setMaxPrice(params.get("maxPrice") || "");
+        setSort(params.get("sort") || "latest");
+        setPage(Math.max(1, Number(params.get("page")) || 1));
+    }, [location.search]);
+
     // KEEP URL SYNCHRONIZED
-    // ========================================================
 
     useEffect(() => {
         const params = {};
@@ -274,29 +264,7 @@ const Products = () => {
         setSearchParams,
     ]);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedSearch(search);
-        }, 500);
-
-        return () => {
-            clearTimeout(timer);
-        };
-    }, [search]);
-
-    // ========================================================
-    // SEARCH
-    // ========================================================
-
-    const handleSearchSubmit = (event) => {
-        event.preventDefault();
-
-        setPage(1);
-    };
-
-    // ========================================================
     // CATEGORY
-    // ========================================================
 
     const handleCategoryChange = (event) => {
         setCategory(event.target.value);
@@ -304,9 +272,7 @@ const Products = () => {
         setPage(1);
     };
 
-    // ========================================================
     // SORT
-    // ========================================================
 
     const handleSortChange = (event) => {
         setSort(event.target.value);
@@ -314,30 +280,25 @@ const Products = () => {
         setPage(1);
     };
 
-    // ========================================================
     // PRICE FILTER
-    // ========================================================
 
     const handlePriceFilter = () => {
         setPage(1);
     };
 
-    // ========================================================
     // CLEAR FILTERS
-    // ========================================================
-
     const clearFilters = () => {
-        setSearch("");
         setCategory("");
         setMinPrice("");
         setMaxPrice("");
         setSort("latest");
         setPage(1);
+
+        // Clear the navbar search and URL filters.
+        setSearchParams({});
     };
 
-    // ========================================================
     // ADD TO CART
-    // ========================================================
 
     const handleAddToCart = async (product) => {
         try {
@@ -381,33 +342,14 @@ const Products = () => {
         }
     };
 
-    // ========================================================
-    // CURRENCY
-    // ========================================================
-
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat(
-            "en-NG",
-            {
-                style: "currency",
-                currency: "NGN",
-                maximumFractionDigits: 0,
-            }
-        ).format(Number(price));
-    };
-
-    // ========================================================
     // RENDER
-    // ========================================================
 
     return (
         <>
             <Header />
             <main className="products-page">
 
-                {/* ==================================================
-                PAGE HEADER
-            ================================================== */}
+                {/* PAGE HEADER */}
 
                 <section className="products-header">
 
@@ -423,39 +365,13 @@ const Products = () => {
                         </p>
                     </div>
 
-                    <form
-                        className="products-search"
-                        onSubmit={
-                            handleSearchSubmit
-                        }
-                    >
-                        <input
-                            type="text"
-                            placeholder="Search products..."
-                            value={search}
-                            onChange={(event) =>
-                                setSearch(
-                                    event.target.value
-                                )
-                            }
-                        />
-
-                        <button type="submit">
-                            Search
-                        </button>
-                    </form>
-
                 </section>
 
-                {/* ==================================================
-                MAIN CONTENT
-            ================================================== */}
+                {/* MAIN CONTENT */}
 
                 <section className="products-content">
 
-                    {/* ==================================================
-                    FILTER SIDEBAR
-                ================================================== */}
+                    {/* FILTER SIDEBAR */}
 
                     <aside className="products-filters">
 
@@ -575,9 +491,7 @@ const Products = () => {
 
                     </aside>
 
-                    {/* ==================================================
-                    PRODUCTS RESULTS
-                ================================================== */}
+                    {/* PRODUCTS RESULTS */}
 
                     <div className="products-results">
 
@@ -624,9 +538,7 @@ const Products = () => {
 
                         </div>
 
-                        {/* ==================================================
-                        ERROR
-                    ================================================== */}
+                        {/* ERROR */}
 
                         {error && (
                             <div className="products-error">
@@ -634,9 +546,7 @@ const Products = () => {
                             </div>
                         )}
 
-                        {/* ==================================================
-                        LOADING
-                    ================================================== */}
+                        {/*LOADING */}
 
                         {loading && (
                             <div className="products-loading">
@@ -648,9 +558,7 @@ const Products = () => {
                             </div>
                         )}
 
-                        {/* ==================================================
-                        PRODUCT GRID
-                    ================================================== */}
+                        {/* PRODUCT GRID */}
 
                         {!loading &&
                             !error &&
@@ -675,9 +583,7 @@ const Products = () => {
                             )}
 
 
-                        {/* ==================================================
-                        EMPTY STATE
-                    ================================================== */}
+                        {/* EMPTY STATE */}
 
                         {!loading &&
                             !error &&
@@ -710,9 +616,7 @@ const Products = () => {
 
                 </section>
 
-                {/* ==================================================
-                TOAST
-            ================================================== */}
+                {/*TOAST */}
 
                 <Toast
                     message={toastMessage}

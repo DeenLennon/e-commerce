@@ -63,7 +63,7 @@ const register = async (req, res) => {
       secure: process.env.NODE_ENV === "production",
       sameSite:
         process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 5 * 60 * 1000,
     });
 
     // 9. Return safe user information
@@ -145,7 +145,7 @@ const login = async (req, res) => {
       secure: process.env.NODE_ENV === "production",
       sameSite:
         process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 30 * 60 * 1000,
     });
 
     // 8. Return safe user information

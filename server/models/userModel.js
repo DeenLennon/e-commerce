@@ -1,17 +1,20 @@
 const pool = require("../config/db");
 
-const createUser = async ({
-  first_name,
-  last_name,
-  email,
-  password_hash,
-  phone,
-}) => {
-  const [result] = await pool.query(
+const createUser = async (userData, connection = pool) => {
+  const {
+    first_name,
+    last_name,
+    email,
+    password_hash,
+    phone,
+    location,
+  } = userData;
+
+  const [result] = await connection.query(
     `
     INSERT INTO users
-      (first_name, last_name, email, password_hash, phone)
-    VALUES (?, ?, ?, ?, ?)
+      (first_name, last_name, email, password_hash, phone, location)
+    VALUES (?, ?, ?, ?, ?, ?)
     `,
     [
       first_name,
@@ -19,11 +22,13 @@ const createUser = async ({
       email,
       password_hash,
       phone || null,
+      location || null,
     ]
   );
 
   return result.insertId;
 };
+
 
 const findUserByEmail = async (email) => {
   const [rows] = await pool.query(

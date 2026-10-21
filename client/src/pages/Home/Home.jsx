@@ -265,7 +265,6 @@ const Home = () => {
 
                 <section className="home-section">
                     <div className="home-container">
-
                         <div className="section-heading">
                             <div>
                                 <span className="section-heading__eyebrow">
@@ -469,7 +468,7 @@ const Home = () => {
 
                         <div>
                             <span>
-                                TECH DEALS
+                                BIG DEALS
                             </span>
 
                             <h2>

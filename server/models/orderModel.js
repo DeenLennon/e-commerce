@@ -166,25 +166,55 @@ const findOrderById = async (id) => {
 
   const order = rows[0];
 
+  // const [items] = await pool.query(
+  //   `
+  //   SELECT
+  //     oi.id,
+  //     oi.order_id,
+  //     oi.product_id,
+  //     oi.product_name,
+  //     oi.product_sku,
+  //     oi.price,
+  //     oi.quantity,
+  //     oi.subtotal,
+  //     oi.created_at
+
+  //   FROM order_items oi
+
+  //   WHERE oi.order_id = ?
+
+  //   ORDER BY oi.id ASC
+  //   `,
+  //   [id]
+  // );
+
   const [items] = await pool.query(
     `
-    SELECT
-      oi.id,
-      oi.order_id,
-      oi.product_id,
-      oi.product_name,
-      oi.product_sku,
-      oi.price,
-      oi.quantity,
-      oi.subtotal,
-      oi.created_at
+  SELECT
+    oi.id,
+    oi.order_id,
+    oi.product_id,
+    oi.product_name,
+    oi.product_sku,
+    oi.price,
+    oi.quantity,
+    oi.subtotal,
+    oi.created_at,
 
-    FROM order_items oi
+    (
+      SELECT pi.image_url
+      FROM product_images pi
+      WHERE pi.product_id = oi.product_id
+      ORDER BY pi.is_primary DESC, pi.sort_order ASC, pi.id ASC
+      LIMIT 1
+    ) AS image_url
 
-    WHERE oi.order_id = ?
+  FROM order_items oi
 
-    ORDER BY oi.id ASC
-    `,
+  WHERE oi.order_id = ?
+
+  ORDER BY oi.id ASC
+  `,
     [id]
   );
 
@@ -260,44 +290,80 @@ const findOrderByNumber = async (orderNumber) => {
 |--------------------------------------------------------------------------
 */
 
+// const getAllOrders = async () => {
+//   const [rows] = await pool.query(
+//     `
+//     SELECT
+//       o.id,
+//       o.order_number,
+//       o.user_id,
+//       o.subtotal,
+//       o.shipping_fee,
+//       o.discount,
+//       o.total_amount,
+//       o.payment_status,
+//       o.order_status,
+
+//       o.shipping_first_name,
+//       o.shipping_last_name,
+//       o.shipping_phone,
+//       o.shipping_city,
+//       o.shipping_state,
+//       o.shipping_country,
+
+//       o.created_at,
+//       o.updated_at,
+
+//       u.first_name AS customer_first_name,
+//       u.last_name AS customer_last_name,
+//       u.email AS customer_email
+
+//     FROM orders o
+
+//     INNER JOIN users u
+//       ON o.user_id = u.id
+
+//     ORDER BY o.created_at DESC
+//     `
+//   );
+
+//   return rows;
+// };
+
 const getAllOrders = async () => {
-  const [rows] = await pool.query(
-    `
-    SELECT
-      o.id,
-      o.order_number,
-      o.user_id,
-      o.subtotal,
-      o.shipping_fee,
-      o.discount,
-      o.total_amount,
-      o.payment_status,
-      o.order_status,
+    const [rows] = await pool.query(`
+        SELECT
+            o.id,
+            o.order_number,
+            o.user_id,
+            o.subtotal,
+            o.shipping_fee,
+            o.discount,
+            o.total_amount,
+            o.payment_status,
+            o.order_status,
+            o.shipping_first_name,
+            o.shipping_last_name,
+            o.shipping_phone,
+            o.shipping_city,
+            o.shipping_state,
+            o.shipping_country,
+            o.created_at,
+            o.updated_at,
 
-      o.shipping_first_name,
-      o.shipping_last_name,
-      o.shipping_phone,
-      o.shipping_city,
-      o.shipping_state,
-      o.shipping_country,
+            u.first_name AS customer_first_name,
+            u.last_name AS customer_last_name,
+            u.email AS customer_email
 
-      o.created_at,
-      o.updated_at,
+        FROM orders o
 
-      u.first_name AS customer_first_name,
-      u.last_name AS customer_last_name,
-      u.email AS customer_email
+        LEFT JOIN users u
+            ON o.user_id = u.id
 
-    FROM orders o
+        ORDER BY o.created_at DESC
+    `);
 
-    INNER JOIN users u
-      ON o.user_id = u.id
-
-    ORDER BY o.created_at DESC
-    `
-  );
-
-  return rows;
+    return rows;
 };
 
 /*

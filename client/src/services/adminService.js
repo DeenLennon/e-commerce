@@ -16,6 +16,15 @@ export const getAdminOrders = async () => {
   return response.data;
 };
 
+// Fetch the latest orders for the dashboard
+export const getRecentAdminOrders = async (limit = 5) => {
+  const response = await api.get(
+    `/orders/admin/recent?limit=${limit}`
+  );
+
+  return response.data;
+};
+
 export const getAdminOrderById = async (id) => {
   const response = await api.get(`/orders/${id}`);
   return response.data;

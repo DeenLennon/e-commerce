@@ -9,7 +9,7 @@ import {
 } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
-import { getDashboardStats } from "../../services/adminService";
+import { getDashboardStats, getRecentAdminOrders } from "../../services/adminService";
 
 import "./Dashboard.scss";
 
@@ -18,6 +18,7 @@ const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [recentOrders, setRecentOrders] = useState([]);
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -47,6 +48,39 @@ const Dashboard = () => {
 
     loadDashboard();
   }, []);
+
+
+
+  useEffect(() => {
+    const loadRecentOrders = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await getRecentAdminOrders(5);
+
+        if (response.success) {
+          setRecentOrders(response.orders || []);
+        } else {
+          setError(
+            response.message || "Failed to load recent orders."
+          );
+        }
+      } catch (error) {
+        console.error("Recent orders error:", error);
+
+        setError(
+          error.response?.data?.message ||
+          "Unable to load recent orders."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRecentOrders();
+  }, []);
+
 
 
   return (
@@ -432,45 +466,99 @@ const Dashboard = () => {
 
       </section>
 
-      {/* =====================================================
-          RECENT ORDERS
-      ===================================================== */}
+
+      {/* RECENT ORDERS */}
       <section className="dashboard-card recent-orders-card">
-
         <div className="card-header">
-
           <div>
-            <h2>
-              Recent Orders
-            </h2>
-
-            <p>
-              Latest customer orders
-            </p>
+            <h2>Recent Orders</h2>
+            <p>Latest customer orders</p>
           </div>
 
-          <button className="view-link">
+          <a href="/admin/orders" className="view-link">
             View all
-          </button>
-
+          </a>
         </div>
 
-        <div className="empty-dashboard">
+        {loading ? (
+          <div className="empty-dashboard">
+            <p>Loading recent orders...</p>
+          </div>
+        ) : error ? (
+          <div className="empty-dashboard">
+            <FiShoppingCart />
+            <h3>Unable to load orders</h3>
+            <p>{error}</p>
+          </div>
+        ) : recentOrders.length > 0 ? (
+          <div className="recent-orders-list">
+            {recentOrders.map((order) => {
+              const status =
+                order.order_status || order.status || "pending";
 
-          <FiShoppingCart />
+              const customerName =
+                [
+                  order.shipping_first_name || order.first_name,
+                  order.shipping_last_name || order.last_name,
+                ]
+                  .filter(Boolean)
+                  .join(" ") || "Customer";
 
-          <h3>
-            No orders yet
-          </h3>
+              return (
+                <div className="recent-order-item" key={order.id}>
+                  <div className="recent-order-info">
+                    <strong>
+                      {order.order_number || `Order #${order.id}`}
+                    </strong>
 
-          <p>
-            Customer orders will appear here
-            when they are placed.
-          </p>
+                    <span>{customerName}</span>
 
-        </div>
+                    <small>
+                      {order.created_at
+                        ? new Date(order.created_at).toLocaleString(
+                          "en-NG",
+                          {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          }
+                        )
+                        : "Date unavailable"}
+                    </small>
+                  </div>
 
+                  <div className="recent-order-meta">
+                    <strong>
+                      ₦
+                      {Number(order.total_amount || 0).toLocaleString(
+                        "en-NG"
+                      )}
+                    </strong>
+
+                    <span
+                      className={`order-status-badge ${status.toLowerCase()}`}
+                    >
+                      {status.charAt(0).toUpperCase() +
+                        status.slice(1)}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="empty-dashboard">
+            <FiShoppingCart />
+
+            <h3>No orders yet</h3>
+
+            <p>
+              Customer orders will appear here when they are placed.
+            </p>
+          </div>
+        )}
       </section>
+
+
 
     </div>
   );

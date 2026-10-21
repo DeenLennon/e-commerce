@@ -1,0 +1,486 @@
+.register-page {
+  min-height: 100vh;
+  background: #f5f6f8;
+
+  padding: 40px 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.register-container {
+  width: 100%;
+  max-width: 1050px;
+
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+
+  background: #fff;
+  border-radius: 18px;
+
+  overflow: hidden;
+
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================================================
+   BRAND PANEL
+========================================================= */
+
+.register-brand-panel {
+  padding: 55px 45px;
+
+  background: #f68b1e;
+
+  color: #fff;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.brand-icon {
+  width: 60px;
+  height: 60px;
+
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.16);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 28px;
+
+  svg {
+    font-size: 32px;
+  }
+}
+
+.register-brand-panel h1 {
+  margin: 0 0 15px;
+
+  font-size: 34px;
+  line-height: 1.2;
+
+  span {
+    display: block;
+    font-weight: 800;
+  }
+}
+
+.register-brand-panel > p {
+  max-width: 400px;
+
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.9);
+
+  line-height: 1.7;
+}
+
+.brand-features {
+  margin-top: 40px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  > div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  span {
+    width: 25px;
+    height: 25px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.2);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+
+    font-size: 14px;
+  }
+}
+
+/* =========================================================
+   FORM PANEL
+========================================================= */
+
+.register-form-panel {
+  padding: 45px 50px;
+}
+
+.register-form-header {
+  margin-bottom: 25px;
+
+  h2 {
+    margin: 0 0 7px;
+
+    color: #222;
+    font-size: 27px;
+  }
+
+  p {
+    margin: 0;
+
+    color: #777;
+    font-size: 14px;
+  }
+}
+
+/* =========================================================
+   ALERT
+========================================================= */
+
+.register-alert {
+  padding: 12px 14px;
+
+  border-radius: 7px;
+
+  margin-bottom: 18px;
+
+  font-size: 13px;
+
+  &.error {
+    background: #fff0f0;
+    border: 1px solid #ffd4d4;
+    color: #c62828;
+  }
+
+  &.success {
+    background: #eaf8ef;
+    border: 1px solid #c9ecd7;
+    color: #198754;
+  }
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.name-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 14px;
+}
+
+.form-group {
+  margin-bottom: 17px;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    margin-bottom: 7px;
+
+    color: #333;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    span {
+      color: #999;
+      font-size: 11px;
+      font-weight: 400;
+    }
+  }
+}
+
+.input-wrapper {
+  height: 48px;
+
+  border: 1px solid #ddd;
+  border-radius: 7px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 13px;
+
+  transition: 0.2s ease;
+
+  &:focus-within {
+    border-color: #f68b1e;
+    box-shadow: 0 0 0 3px rgba(246, 139, 30, 0.1);
+  }
+
+  > svg {
+    flex-shrink: 0;
+
+    color: #999;
+    font-size: 20px;
+
+    margin-right: 9px;
+  }
+
+  input {
+    width: 100%;
+    height: 100%;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+
+    color: #222;
+
+    font-size: 14px;
+
+    &::placeholder {
+      color: #aaa;
+    }
+  }
+}
+
+.password-toggle {
+  border: 0;
+  background: transparent;
+
+  color: #999;
+
+  padding: 0;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+
+  svg {
+    font-size: 19px;
+  }
+
+  &:hover {
+    color: #f68b1e;
+  }
+}
+
+/* =========================================================
+   TERMS
+========================================================= */
+
+.terms-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+
+  margin: 4px 0 20px;
+
+  color: #777;
+
+  font-size: 12px;
+  line-height: 1.5;
+
+  cursor: pointer;
+
+  input {
+    margin-top: 2px;
+    accent-color: #f68b1e;
+  }
+
+  a {
+    color: #f68b1e;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.register-button {
+  width: 100%;
+  min-height: 50px;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: #f68b1e;
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: #e57c10;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  svg {
+    font-size: 19px;
+  }
+}
+
+.button-spinner {
+  width: 18px;
+  height: 18px;
+
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+
+  border-radius: 50%;
+
+  animation: registerSpinner 0.7s linear infinite;
+}
+
+@keyframes registerSpinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+.login-divider {
+  margin: 25px 0 15px;
+
+  text-align: center;
+
+  color: #999;
+
+  font-size: 12px;
+
+  position: relative;
+
+  span {
+    background: #fff;
+    padding: 0 12px;
+
+    position: relative;
+    z-index: 1;
+  }
+
+  &::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    top: 50%;
+
+    height: 1px;
+
+    background: #eee;
+  }
+}
+
+.login-link {
+  min-height: 46px;
+
+  border: 1px solid #f68b1e;
+  border-radius: 7px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #f68b1e;
+
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  &:hover {
+    background: #fff8f0;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 800px) {
+  .register-container {
+    grid-template-columns: 1fr;
+  }
+
+  .register-brand-panel {
+    padding: 35px 30px;
+  }
+
+  .register-brand-panel h1 {
+    font-size: 28px;
+  }
+
+  .brand-features {
+    margin-top: 25px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .register-form-panel {
+    padding: 35px 30px;
+  }
+}
+
+@media (max-width: 520px) {
+  .register-page {
+    padding: 15px 10px;
+  }
+
+  .register-brand-panel {
+    padding: 30px 22px;
+  }
+
+  .register-brand-panel > p {
+    font-size: 13px;
+  }
+
+  .brand-features {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .register-form-panel {
+    padding: 30px 20px;
+  }
+
+  .name-fields {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .register-form-header h2 {
+    font-size: 24px;
+  }
+}

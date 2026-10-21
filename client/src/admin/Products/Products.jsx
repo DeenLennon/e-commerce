@@ -6,6 +6,7 @@ import {
   deleteProduct,
 } from "../../services/productService";
 import "./Products.scss";
+import { getImageUrl } from "../../utils/imageUrl";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -107,22 +108,32 @@ const Products = () => {
   };
 
   const getProductImage = (product) => {
-    if (!product.images || product.images.length === 0) {
-      return null;
+    if (!product) {
+        return null;
     }
 
-    const primaryImage = product.images.find(
-      (image) =>
-        image.is_primary === 1 ||
-        image.is_primary === true
-    );
+    // Your API returns the image here
+    if (product.image_url) {
+        return product.image_url;
+    }
 
-    return (
-      primaryImage?.image_url ||
-      product.images[0]?.image_url ||
-      null
-    );
-  };
+    // Optional fallback for future API responses
+    if (Array.isArray(product.images) && product.images.length > 0) {
+        const primaryImage = product.images.find(
+            (image) =>
+                image.is_primary === 1 ||
+                image.is_primary === true
+        );
+
+        return (
+            primaryImage?.image_url ||
+            product.images[0]?.image_url ||
+            null
+        );
+    }
+
+    return null;
+};
 
   const getStatusLabel = (status) => {
     switch (status) {
@@ -448,8 +459,14 @@ const Products = () => {
                           <div className="product-image">
                             {imageUrl ? (
                               <img
-                                src={imageUrl}
+                                src={getImageUrl(imageUrl)}
                                 alt={product.name}
+                                onError={(event) => {
+                                  console.error(
+                                    "Failed to load product image:",
+                                    getImageUrl(imageUrl)
+                                  );
+                                }}
                               />
                             ) : (
                               <div className="product-image-placeholder">

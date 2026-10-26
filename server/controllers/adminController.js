@@ -295,95 +295,6 @@ const getCustomers = async (req, res) => {
   }
 };
 
-
-// const createCustomer = async (req, res) => {
-//   try {
-//     const { first_name, last_name, email, password, phone, location, } = req.body;
-
-//     // 1. Validate required fields
-//     if (
-//       !first_name?.trim() ||
-//       !last_name?.trim() ||
-//       !email?.trim() ||
-//       !password
-//     ) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "First name, last name, email and password are required.",
-//       });
-//     }
-
-//     // 2. Validate password
-//     if (password.length < 8) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Password must be at least 8 characters long.",
-//       });
-//     }
-
-//     // 3. Normalize email
-//     const normalizedEmail = email.trim().toLowerCase();
-
-//     // 4. Check for an existing account
-//     const existingUser = await findUserByEmail(normalizedEmail);
-
-//     if (existingUser) {
-//       return res.status(409).json({
-//         success: false,
-//         message: "An account with this email already exists.",
-//       });
-//     }
-
-//     // 5. Hash the password using the same method as registration
-//     const passwordHash = await bcrypt.hash(password, 12);
-
-//     // 6. Create the customer
-//     // Do not accept role from req.body.
-//     const userId = await createUser({
-//       first_name: first_name.trim(),
-//       last_name: last_name.trim(),
-//       email: normalizedEmail,
-//       password_hash: passwordHash,
-//       phone: phone?.trim() || null,
-//       location: location?.trim() || null,
-//     });
-
-//     // 7. Fetch the created user
-//     const user = await findUserByEmail(normalizedEmail);
-
-//     if (!user) {
-//       return res.status(500).json({
-//         success: false,
-//         message: "Customer was created but could not be retrieved.",
-//       });
-//     }
-
-//     // 8. Return safe user details; do not set an authentication cookie
-//     return res.status(201).json({
-//       success: true,
-//       message: "Customer created successfully.",
-//       customer: {
-//         id: userId,
-//         first_name: user.first_name,
-//         last_name: user.last_name,
-//         email: user.email,
-//         phone: user.phone,
-//         role: user.role,
-//         status: user.status,
-//         created_at: user.created_at,
-//       },
-//     });
-//   } catch (error) {
-//     console.error("Create customer error:", error);
-
-//     return res.status(500).json({
-//       success: false,
-//       message: "Failed to create customer.",
-//     });
-//   }
-// };
-
-
 const createCustomer = async (req, res) => {
   let connection;
   let transactionStarted = false;
@@ -617,15 +528,6 @@ const createCustomer = async (req, res) => {
     // 9. Commit both inserts together.
     await connection.commit();
     transactionStarted = false;
-
-    // return res.status(201).json({
-    //     success: true,
-    //     message: "Customer created successfully.",
-    //     customer: {
-    //         ...createdUsers[0],
-    //         address_id: addressId,
-    //     },
-    // });
 
     // 10. Send the success response.
     return res.status(201).json({

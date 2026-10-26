@@ -227,17 +227,19 @@ const AdminLayout = () => {
                     <span className="navigation-title">
                         ACCOUNT
                     </span>
-
-                    <button
-                        type="button"
-                        className="sidebar-action"
+                    <NavLink
+                        to="/admin/settings"
+                        onClick={() => setSidebarOpen(false)}
+                        className={({ isActive }) =>
+                            `sidebar-action ${isActive ? "active" : ""}`
+                        }
                     >
                         <span className="nav-icon">
                             <FiSettings />
                         </span>
 
                         <span>Settings</span>
-                    </button>
+                    </NavLink>
 
                     <button
                         type="button"

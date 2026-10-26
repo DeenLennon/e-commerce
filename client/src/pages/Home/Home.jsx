@@ -15,6 +15,8 @@ import { getImageUrl } from "../../utils/imageUrl";
 import Header from "../../components/Header/Header";
 import CategoryCard from "../../components/CategoryCard/CategoryCard";
 import Footer from "../../components/Footer/Footer";
+import { useCart } from "../../context/CartContext";
+import Toast from "../../components/Toast/Toast";
 
 import "./Home.scss";
 
@@ -28,6 +30,8 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
     const [addingProduct, setAddingProduct] = useState(null);
     const [error, setError] = useState("");
+    // CART CONTEXT
+    const { refreshCartCount } = useCart();
 
     useEffect(() => {
         loadStorefront();
@@ -100,6 +104,15 @@ const Home = () => {
         return counts;
     }, [products]);
 
+    // TOAST NOTIFICATION
+    const [toastVisible, setToastVisible] = useState(false);
+    const [toastMessage, setToastMessage] = useState("");
+
+    const showToast = (message) => {
+        setToastMessage(message);
+        setToastVisible(true);
+    };
+
     const featuredProducts = useMemo(() => {
         return products
             .filter(
@@ -169,30 +182,38 @@ const Home = () => {
         return "";
     };
 
+
     const handleAddToCart = async (product) => {
         try {
             setAddingProduct(product.id);
 
-            await addToCart(product.id, 1);
+            const response = await addToCart(product.id, 1);
 
-            alert(
-                `${product.name} has been added to your cart.`
+            // Handle an unsuccessful response.
+            if (response?.success === false) {
+                throw new Error(
+                    response.message || "Failed to add product to cart."
+                );
+            }
+
+            // Refresh the cart badge in the header.
+            await refreshCartCount();
+
+            // Display the success toast.
+            showToast(`${product.name} added to your cart.`);
+        } catch (error) {
+            console.error("Add to cart error:", error);
+
+            showToast(
+                error?.response?.data?.message ||
+                error.message ||
+                "Unable to add product to your cart."
             );
-        } catch (err) {
-            console.error(
-                "Failed to add product to cart:",
-                err
-            );
-
-            const message =
-                err?.response?.data?.message ||
-                "Unable to add this product to your cart.";
-
-            alert(message);
         } finally {
             setAddingProduct(null);
         }
     };
+
 
     if (loading) {
         return (
@@ -492,6 +513,12 @@ const Home = () => {
 
                     </div>
                 </section>
+
+                <Toast
+                    message={toastMessage}
+                    visible={toastVisible}
+                    onClose={() => setToastVisible(false)}
+                />
 
             </main>
 

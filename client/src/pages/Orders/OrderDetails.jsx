@@ -13,6 +13,7 @@ import {
 import { getOrderById } from "../../services/orderService";
 import { getImageUrl } from "../../utils/imageUrl";
 import { initializePayment } from "../../services/paymentService";
+import Receipt from "../../components/Receipt/Receipt";
 
 import "./OrderDetails.scss";
 
@@ -287,6 +288,17 @@ const OrderDetails = () => {
                             </strong>
                         </div>
                     </div>
+
+                    {/* Receipt */}
+                    <div className="order-receipt-wrapper">
+                        <Receipt order={order} />
+                    </div>
+
+                </div>
+
+                {/* Receipt */}
+                <div className="order-receipt-wrapper">
+                    <Receipt order={order} />
                 </div>
 
                 <div className="order-content">

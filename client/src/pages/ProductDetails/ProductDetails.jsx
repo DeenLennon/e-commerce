@@ -32,6 +32,8 @@ import {
     getImageUrl,
 } from "../../utils/imageUrl";
 
+import RecommendedProducts from "./RecommendedProducts";
+
 import "./ProductDetails.scss";
 
 
@@ -81,10 +83,7 @@ const ProductDetails = () => {
                 response?.data ||
                 response;
 
-            /*
-             * Make sure the gallery always starts
-             * from the first image.
-             */
+            /*from the first image.*/
             setProduct(loadedProduct);
 
             setQuantity(1);
@@ -105,10 +104,7 @@ const ProductDetails = () => {
         }
     };
 
-
-    /*
-     * FORMAT PRICE
-     */
+/*FORMAT PRICE*/
     const formatPrice = (price) => {
         return new Intl.NumberFormat(
             "en-NG",
@@ -120,33 +116,12 @@ const ProductDetails = () => {
         ).format(Number(price) || 0);
     };
 
-
-    /*
-     * GET PRODUCT IMAGES
-     *
-     * Supports:
-     *
-     * product.images = [
-     *   {
-     *     id,
-     *     image_url,
-     *     is_primary,
-     *     sort_order
-     *   }
-     * ]
-     *
-     * It also supports the older
-     * single-image format.
-     */
     const getImages = () => {
         if (!product) {
             return [];
         }
 
-
-        /*
-         * Multiple product images
-         */
+        /* Multiple product images */
         if (
             Array.isArray(product.images) &&
             product.images.length > 0
@@ -156,10 +131,7 @@ const ProductDetails = () => {
                 product.images
                     .map((image, index) => {
 
-                        /*
-                         * Backwards compatibility:
-                         * if API returns strings.
-                         */
+                        /*Backwards compatibility:if API returns strings.*/
                         if (
                             typeof image ===
                             "string"
@@ -177,7 +149,6 @@ const ProductDetails = () => {
                                     index,
                             };
                         }
-
 
                         return {
                             id:
@@ -208,14 +179,7 @@ const ProductDetails = () => {
                             Boolean(image.url)
                     );
 
-
-            /*
-             * Sort:
-             *
-             * 1. Primary image first
-             * 2. sort_order
-             * 3. original position
-             */
+            /* Sort: 1. Primary image first 2. sort_order 3. original position */
             productImages.sort(
                 (a, b) => {
 
@@ -313,7 +277,6 @@ const ProductDetails = () => {
         }
     };
 
-
     /*
      * ADD TO CART
      */
@@ -359,7 +322,6 @@ const ProductDetails = () => {
             setAddingToCart(false);
         }
     };
-
 
     /*
      * BUY NOW
@@ -567,9 +529,7 @@ const ProductDetails = () => {
 
                 <div className="product-details-container">
 
-                    {/* =========================
-                        BREADCRUMB
-                    ========================== */}
+                    {/* BREADCRUMB */}
 
                     <div className="product-details-breadcrumb">
 
@@ -596,16 +556,12 @@ const ProductDetails = () => {
                     </div>
 
 
-                    {/* =========================
-                        PRODUCT
-                    ========================== */}
+                    {/* PRODUCT */}
 
                     <section className="product-details">
 
 
-                        {/* =========================
-                            GALLERY
-                        ========================== */}
+                        {/* GALLERY */}
 
                         <div className="product-gallery">
 
@@ -757,12 +713,9 @@ const ProductDetails = () => {
                         </div>
 
 
-                        {/* =========================
-                            PRODUCT INFORMATION
-                        ========================== */}
+                        {/* PRODUCT INFORMATION */}
 
                         <div className="product-info">
-
 
                             <div className="product-info__category">
 
@@ -1050,14 +1003,12 @@ const ProductDetails = () => {
                     </section>
 
 
-                    {/* =========================
-                        DESCRIPTION
-                    ========================== */}
+                    {/* DESCRIPTION */}
 
                     <section className="product-description">
 
                         <h2>
-                            Product Description
+                            Product details
                         </h2>
 
                         <div>
@@ -1084,6 +1035,10 @@ const ProductDetails = () => {
                         </div>
 
                     </section>
+
+                     {/* RECOMMENDED PRODUCTS WITH INFINITE SCROLL */}
+
+                    <RecommendedProducts product={product} />
 
                 </div>
 

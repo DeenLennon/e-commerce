@@ -49,8 +49,7 @@ const AdminLogin = () => {
         return;
       }
 
-      // The backend must verify that this account is an admin.
-      // Never rely on the frontend alone for authorization.
+      // The backend verify admin account.
       navigate("/admin", { replace: true });
     } catch (err) {
       setError(
@@ -73,14 +72,6 @@ const AdminLogin = () => {
             </span>
           </Link>
 
-          {/* <div className="admin-login__icon">
-            <FiShield />
-          </div>
-
-          <h1>Admin Login</h1>
-          <p>
-            Sign in to manage your store, products, and orders.
-          </p> */}
         </header>
 
         <div className="admin-login__divider" />

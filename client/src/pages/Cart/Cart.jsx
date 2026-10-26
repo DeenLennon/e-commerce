@@ -25,6 +25,9 @@ import { getImageUrl } from "../../utils/imageUrl";
 
 import { useNavigate } from "react-router-dom";
 
+import { useCart } from "../../context/CartContext";
+import Toast from "../../components/Toast/Toast";
+
 import "./Cart.scss";
 
 const formatCurrency = (amount) => {
@@ -37,12 +40,23 @@ const formatCurrency = (amount) => {
 
 const Cart = () => {
     const navigate = useNavigate();
+    const { refreshCartCount } = useCart();
 
     const [cart, setCart] = useState({
         items: [],
         itemCount: 0,
         subtotal: 0,
     });
+
+    const [toastVisible, setToastVisible] = useState(false);
+    const [toastMessage, setToastMessage] = useState("");
+
+    const [showClearModal, setShowClearModal] = useState(false);
+
+    const showToast = (message) => {
+        setToastMessage(message);
+        setToastVisible(true);
+    };
 
     const [loading, setLoading] =
         useState(true);
@@ -106,7 +120,7 @@ const Cart = () => {
     }, [loadCart]);
 
     // UPDATE QUANTITY
-    
+
     const handleQuantityChange = async (
         productId,
         currentQuantity,
@@ -140,6 +154,7 @@ const Cart = () => {
             }
 
             setCart(response.cart);
+            await refreshCartCount();
         } catch (err) {
             console.error(
                 "Update cart error:",
@@ -157,35 +172,27 @@ const Cart = () => {
     };
 
     // REMOVE ITEM
-    
-    const handleRemove = async (
-        productId
-    ) => {
+
+    const handleRemove = async (productId) => {
         try {
             setError("");
+            setRemovingProductId(productId);
 
-            setRemovingProductId(
-                productId
-            );
-
-            const response =
-                await removeFromCart(
-                    productId
-                );
+            const response = await removeFromCart(productId);
 
             if (!response?.success) {
                 throw new Error(
-                    response?.message ||
-                    "Failed to remove item"
+                    response?.message || "Failed to remove item"
                 );
             }
 
+            // Update the cart page immediately.
             setCart(response.cart);
+
+            // Refresh the cart count displayed in the header.
+            await refreshCartCount();
         } catch (err) {
-            console.error(
-                "Remove cart item error:",
-                err
-            );
+            console.error("Remove cart item error:", err);
 
             setError(
                 err.response?.data?.message ||
@@ -197,18 +204,13 @@ const Cart = () => {
         }
     };
 
+
     // CLEAR CART
-    
+
+
     const handleClearCart = async () => {
         if (!cart.items?.length) {
-            return;
-        }
-
-        const confirmed = window.confirm(
-            "Are you sure you want to remove all items from your cart?"
-        );
-
-        if (!confirmed) {
+            setShowClearModal(false);
             return;
         }
 
@@ -216,35 +218,35 @@ const Cart = () => {
             setError("");
             setClearing(true);
 
-            const response =
-                await clearCart();
+            const response = await clearCart();
 
             if (!response?.success) {
                 throw new Error(
-                    response?.message ||
-                    "Failed to clear cart"
+                    response?.message || "Failed to clear cart"
                 );
             }
 
             setCart(response.cart);
-        } catch (err) {
-            console.error(
-                "Clear cart error:",
-                err
-            );
+            await refreshCartCount();
 
-            setError(
+            setShowClearModal(false);
+            showToast("Your cart has been cleared successfully.");
+        } catch (err) {
+            console.error("Clear cart error:", err);
+
+            showToast(
                 err.response?.data?.message ||
                 err.message ||
-                "Failed to clear cart"
+                "Failed to clear cart."
             );
         } finally {
             setClearing(false);
         }
     };
 
+
     // CHECKOUT
-    
+
     const handleCheckout = () => {
         if (!cart.items?.length) {
             return;
@@ -254,7 +256,7 @@ const Cart = () => {
     };
 
     // LOADING
-    
+
     if (loading) {
         return (
             <main className="cart-page">
@@ -316,16 +318,11 @@ const Cart = () => {
                         <button
                             type="button"
                             className="clear-cart-button"
-                            onClick={
-                                handleClearCart
-                            }
+                            onClick={() => setShowClearModal(true)}
                             disabled={clearing}
                         >
                             <FiTrash2 />
-
-                            {clearing
-                                ? "Clearing..."
-                                : "Clear Cart"}
+                            Clear Cart
                         </button>
                     )}
                 </div>
@@ -660,6 +657,71 @@ const Cart = () => {
                 )}
 
             </div>
+
+
+            {showClearModal && (
+                <div
+                    className="clear-modal-overlay"
+                    onClick={() => {
+                        if (!clearing) {
+                            setShowClearModal(false);
+                        }
+                    }}
+                >
+                    <div
+                        className="clear-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="clear-modal-title"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <div className="clear-modal-icon">
+                            <FiTrash2 />
+                        </div>
+
+                        <h2 id="clear-modal-title">
+                            Clear your cart?
+                        </h2>
+
+                        <p>
+                            Are you sure you want to remove all{" "}
+                            {cart.items.length === 1
+                                ? "item"
+                                : `${cart.items.length} items`}{" "}
+                            from your cart? This action cannot be undone.
+                        </p>
+
+                        <div className="clear-modal-actions">
+                            <button
+                                type="button"
+                                className="clear-modal-cancel"
+                                onClick={() => setShowClearModal(false)}
+                                disabled={clearing}
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="button"
+                                className="clear-modal-confirm"
+                                onClick={handleClearCart}
+                                disabled={clearing}
+                            >
+                                <FiTrash2 />
+
+                                {clearing ? "Clearing..." : "Yes, clear cart"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <Toast
+                message={toastMessage}
+                visible={toastVisible}
+                onClose={() => setToastVisible(false)}
+            />
+
         </main>
     );
 };

@@ -68,7 +68,6 @@ const Footer = () => {
                     >
                         <div className="footer-input">
                             <FiMail />
-
                             <input
                                 type="email"
                                 name="email"

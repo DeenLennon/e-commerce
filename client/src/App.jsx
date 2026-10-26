@@ -19,6 +19,7 @@ import Orders from "./admin/Orders/Orders";
 import Categories from "./admin/Categories/Categories";
 import Customers from "./admin/Customers/Customers";
 import AdminLogin from "./admin/adminLogin/AdminLogin";
+import Settings from "./admin/settings/Settings";
 
 // =====================================================
 // CUSTOMER PAGES
@@ -187,6 +188,11 @@ function App() {
             path="customers"
             element={<Customers />}
           />
+
+           <Route 
+            path="settings" 
+            element={<Settings />} 
+           />
 
         </Route>
 

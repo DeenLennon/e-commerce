@@ -7,6 +7,12 @@ const {
 } = require("../controllers/adminController");
 
 const {
+    getAdminProfile,
+    updateAdminProfile,
+    changeAdminPassword,
+} = require("../controllers/adminSettingsController");
+
+const {
     getNotifications,
     markNotificationAsRead,
     markAllNotificationsAsRead,
@@ -25,6 +31,32 @@ router.get("/dashboard", protect, adminOnly, getDashboardStats);
 router.get("/customers", protect, adminOnly, getCustomers);
 
 router.post("/customers", protect, adminOnly, createCustomer);
+
+// ADMIN SETTINGS
+
+// GET /api/admin/settings/profile
+router.get(
+    "/settings/profile",
+    protect,
+    adminOnly,
+    getAdminProfile
+);
+
+// PUT /api/admin/settings/profile
+router.put(
+    "/settings/profile",
+    protect,
+    adminOnly,
+    updateAdminProfile
+);
+
+// PUT /api/admin/settings/password
+router.put(
+    "/settings/password",
+    protect,
+    adminOnly,
+    changeAdminPassword
+);
 
 // GET /api/admin/notifications
 router.get(

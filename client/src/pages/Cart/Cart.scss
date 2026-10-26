@@ -611,6 +611,148 @@
     }
 }
 
+
+/* Clear cart confirmation modal */
+.clear-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    animation: clearOverlayIn 0.2s ease;
+}
+
+.clear-modal {
+    width: 100%;
+    max-width: 420px;
+    padding: 30px;
+    background: #fff;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+
+    animation: clearModalIn 0.25s ease;
+}
+
+.clear-modal-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 18px;
+
+    color: #dc2626;
+    background: #fee2e2;
+    border-radius: 50%;
+    font-size: 28px;
+}
+
+.clear-modal h2 {
+    margin: 0 0 12px;
+    color: #111827;
+    font-size: 23px;
+    font-weight: 700;
+}
+
+.clear-modal p {
+    margin: 0 0 26px;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.clear-modal-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.clear-modal-actions button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    flex: 1;
+    min-height: 46px;
+    padding: 12px 16px;
+
+    border: none;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.clear-modal-cancel {
+    color: #374151;
+    background: #f3f4f6;
+}
+
+.clear-modal-cancel:hover {
+    background: #e5e7eb;
+}
+
+.clear-modal-confirm {
+    color: #fff;
+    background: #dc2626;
+}
+
+.clear-modal-confirm:hover {
+    background: #b91c1c;
+}
+
+.clear-modal-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@keyframes clearOverlayIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes clearModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 480px) {
+    .clear-modal {
+        padding: 24px 20px;
+    }
+
+    .clear-modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .clear-modal-actions button {
+        width: 100%;
+    }
+}
+
 @media (max-width: 480px) {
     .cart-title-icon {
         width: 42px;

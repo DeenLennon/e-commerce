@@ -74,14 +74,12 @@ const ProductCard = ({
     const handleAddToCart = (event) => {
         event.preventDefault();
         event.stopPropagation();
-
         if (
             isOutOfStock ||
             adding
         ) {
             return;
         }
-
         if (onAddToCart) {
             onAddToCart(product);
         }

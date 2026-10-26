@@ -217,18 +217,18 @@ const Home = () => {
 
                         <div className="home-hero__text">
                             <span className="home-hero__badge">
-                                NEW COLLECTION
+                                NEW COLLECTIONS
                             </span>
 
                             <h1>
                                 Discover the latest
-                                <span> technology</span>
+                                <span>technology</span>
                             </h1>
 
                             <p>
                                 Shop smartphones, laptops,
-                                accessories and more at
-                                great prices.
+                                accessories, wearables and more at
+                                affordable prices.
                             </p>
 
                             <Link
@@ -289,7 +289,7 @@ const Home = () => {
                         <div className="category-grid">
 
                             {categories
-                                .slice(0, 6)
+                                .slice(0, 8)
                                 .map((category) => (
 
                                     <CategoryCard
@@ -567,19 +567,15 @@ const ProductCard = ({
                 </Link>
 
                 <div className="product-card__pricing">
-
-                    <strong>
+                    <strong className="product-card__price">
                         {formatPrice(price)}
                     </strong>
 
                     {hasDiscount && (
-                        <span>
-                            {formatPrice(
-                                comparePrice
-                            )}
+                        <span className="product-card__compare-price">
+                            {formatPrice(comparePrice)}
                         </span>
                     )}
-
                 </div>
 
                 <button

@@ -27,7 +27,7 @@ const ProtectedAdminRoute = () => {
   if (!user) {
     return (
       <Navigate
-        to="/login"
+        to="/admin/login"
         replace
         state={{ from: location }}
       />

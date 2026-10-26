@@ -9,9 +9,7 @@
     margin: 0 auto;
 }
 
-/* ============================================================
-   LOADING
-============================================================ */
+/* LOADING */
 
 .home-page--loading {
     min-height: 70vh;
@@ -28,9 +26,7 @@
     animation: spin 1s linear infinite;
 }
 
-/* ============================================================
-   HERO
-============================================================ */
+/* HERO */
 
 .home-hero {
     overflow: hidden;
@@ -43,7 +39,7 @@
 }
 
 .home-hero__content {
-    min-height: 430px;
+    min-height: 330px;
     display: grid;
     grid-template-columns: 1fr 0.9fr;
     align-items: center;
@@ -76,7 +72,7 @@
 
 .home-hero p {
     max-width: 500px;
-    margin-bottom: 28px;
+    margin-bottom: 20px;
     color: #d1d5db;
     font-size: 17px;
     line-height: 1.7;
@@ -108,9 +104,9 @@
 
 .home-hero__circle {
     position: absolute;
-    width: 280px;
-    height: 280px;
-    top: 20px;
+    width: 100px;
+    height: 100px;
+    top: 70px;
     left: 50%;
     transform: translateX(-50%);
     border-radius: 50%;
@@ -122,15 +118,15 @@
 }
 
 .home-hero__circle span {
-    font-size: 48px;
+    font-size: 18px;
     font-weight: 900;
     letter-spacing: 4px;
 }
 
 .home-hero__card {
     position: absolute;
-    width: 90px;
-    height: 90px;
+    width: 50px;
+    height: 50px;
     border-radius: 18px;
     display: flex;
     align-items: center;
@@ -142,23 +138,24 @@
 }
 
 .home-hero__card--one {
-    top: 20px;
-    left: 5%;
+    top: 40px;
+    left: 12%;
+    font-size: 20px;
 }
 
 .home-hero__card--two {
-    right: 5%;
-    top: 80px;
+    right: 12%;
+    top: 50px;
+    font-size: 20px;
 }
 
 .home-hero__card--three {
-    left: 20%;
-    bottom: 0;
+    left: 40%;
+    bottom: 20px;
+    font-size: 20px;
 }
 
-/* ============================================================
-   SECTIONS
-============================================================ */
+/* SECTIONS */
 
 .home-section {
     padding: 55px 0;
@@ -199,19 +196,15 @@
     text-decoration: none;
 }
 
-/* ============================================================
-   CATEGORIES
-============================================================ */
+/* CATEGORIES */
 
 .category-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 15px;
 }
 
-/* ============================================================
-   PRODUCT GRID
-============================================================ */
+/* PRODUCT GRID */
 
 .product-grid {
     display: grid;
@@ -219,9 +212,7 @@
     gap: 16px;
 }
 
-/* ============================================================
-   PRODUCT CARD
-============================================================ */
+/* PRODUCT CARD */
 
 .product-card {
     overflow: hidden;
@@ -304,6 +295,7 @@
 .product-card__pricing {
     display: flex;
     flex-direction: column;
+    
     margin: 10px 0 13px;
 }
 

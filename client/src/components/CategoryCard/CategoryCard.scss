@@ -45,9 +45,7 @@
   }
 }
 
-/* =================================
-   IMAGE
-================================= */
+/* IMAGE */
 
 .category-card__image {
   position: relative;
@@ -60,7 +58,7 @@
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     transition: transform 0.5s ease;
   }
 }
@@ -95,9 +93,7 @@
   transition: opacity 0.3s ease;
 }
 
-/* =================================
-   PRODUCT COUNT
-================================= */
+/* PRODUCT COUNT */
 
 .category-card__count {
   position: absolute;
@@ -113,52 +109,39 @@
   font-weight: 600;
 }
 
-/* =================================
-   ARROW
-================================= */
+/* ARROW */
 
 .category-card__arrow {
   position: absolute;
   top: 14px;
   right: 14px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 38px;
   height: 38px;
-
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-
   background: rgba(255, 255, 255, 0.15);
   color: #ffffff;
-
   backdrop-filter: blur(10px);
-
   opacity: 0;
   transform: translate(8px, -8px);
-
   transition:
     opacity 0.3s ease,
     transform 0.3s ease;
-
   svg {
     font-size: 19px;
   }
 }
 
-/* =================================
-   CONTENT
-================================= */
+/* CONTENT */
 
 .category-card__content {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 15px;
-
   min-height: 88px;
   padding: 17px 18px;
 }
@@ -205,9 +188,7 @@
   }
 }
 
-/* =================================
-   RESPONSIVE
-================================= */
+/* RESPONSIVE */
 
 @media (max-width: 768px) {
   .category-card__image {

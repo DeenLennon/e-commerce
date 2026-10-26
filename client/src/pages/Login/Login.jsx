@@ -54,11 +54,11 @@ const Login = () => {
       }
 
       // Where the user originally tried to go
-      const from =
-        location.state?.from?.pathname ||
-        "/admin/products";
+      // const from =
+      //   location.state?.from?.pathname ||
+      //   "/admin/products";
 
-      navigate(from, {
+      navigate("/", {
         replace: true,
       });
     } catch (error) {

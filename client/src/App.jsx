@@ -18,6 +18,7 @@ import EditProduct from "./admin/EditProduct/EditProduct";
 import Orders from "./admin/Orders/Orders";
 import Categories from "./admin/Categories/Categories";
 import Customers from "./admin/Customers/Customers";
+import AdminLogin from "./admin/adminLogin/AdminLogin";
 
 // =====================================================
 // CUSTOMER PAGES
@@ -104,9 +105,7 @@ function App() {
       />
 
 
-      {/* =====================================================
-          CUSTOMER ORDERS
-      ===================================================== */}
+      {/* CUSTOMER ORDERS */}
 
       <Route
         path="/orders/:id"
@@ -119,19 +118,19 @@ function App() {
       />
 
 
-      {/* =====================================================
-          PAYSTACK CALLBACK
-      ===================================================== */}
+      {/* PAYSTACK CALLBACK */}
 
       <Route
         path="/payment/callback"
         element={<PaymentCallback />}
       />
 
+      <Route
+        path="/admin/login"
+        element={<AdminLogin />}
+      />
 
-      {/* =====================================================
-          PROTECTED ADMIN AREA
-      ===================================================== */}
+      {/*PROTECTED ADMIN AREA*/}
 
       <Route element={<ProtectedAdminRoute />}>
 
@@ -194,9 +193,7 @@ function App() {
       </Route>
 
 
-      {/* =====================================================
-          UNKNOWN ROUTES
-      ===================================================== */}
+      {/*UNKNOWN ROUTES */}
 
       <Route
         path="*"

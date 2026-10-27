@@ -1,10 +1,44 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ReactQuill, { Quill } from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 
 import { createProduct } from "../../services/productService";
 import { getCategories } from "../../services/categoryService";
 import "./CreateProduct.scss";
+
+
+/* Register available font families */
+const Font = Quill.import("formats/font");
+
+Font.whitelist = [
+  "arial",
+  "times-new-roman",
+  "georgia",
+  "verdana",
+  "tahoma",
+  "courier-new",
+];
+
+Quill.register(Font, true);
+
+/* Register available font sizes */
+const Size = Quill.import("attributors/style/size");
+
+Size.whitelist = [
+  "12px",
+  "14px",
+  "16px",
+  "18px",
+  "20px",
+  "24px",
+  "28px",
+  "32px",
+  "36px",
+];
+
+Quill.register(Size, true);
 
 const MAX_IMAGES = 10;
 
@@ -29,6 +63,9 @@ const CreateProduct = () => {
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  const [success, setSuccess] = useState("");
+
 
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
@@ -727,19 +764,17 @@ const CreateProduct = () => {
                   {images.map(
                     (image, index) => (
                       <div
-                        className={`product-image-preview ${
-                          image.isPrimary
-                            ? "product-image-preview--primary"
-                            : ""
-                        }`}
+                        className={`product-image-preview ${image.isPrimary
+                          ? "product-image-preview--primary"
+                          : ""
+                          }`}
                         key={`${image.file.name}-${index}`}
                       >
 
                         <img
                           src={image.preview}
-                          alt={`Product ${
-                            index + 1
-                          }`}
+                          alt={`Product ${index + 1
+                            }`}
                         />
 
                         {/* IMAGE NUMBER */}
@@ -761,9 +796,8 @@ const CreateProduct = () => {
                           onClick={() =>
                             removeImage(index)
                           }
-                          aria-label={`Remove product image ${
-                            index + 1
-                          }`}
+                          aria-label={`Remove product image ${index + 1
+                            }`}
                         >
                           ×
                         </button>
@@ -828,15 +862,46 @@ const CreateProduct = () => {
                   Short Description
                 </label>
 
-                <textarea
-                  id="short_description"
-                  name="short_description"
-                  value={
-                    formData.short_description
-                  }
-                  onChange={handleChange}
-                  rows={4}
-                  placeholder="Write a short summary of the product..."
+                <ReactQuill
+                  theme="snow"
+                  value={formData.short_description}
+                  onChange={(value) => {
+                    setFormData((previous) => ({
+                      ...previous,
+                      short_description: value,
+                    }));
+
+                    setError("");
+                    setSuccess("");
+                  }}
+                  placeholder="Write a brief product summary..."
+                  modules={{
+                    toolbar: [
+                      [{ font: Font.whitelist }],
+                      [{ size: Size.whitelist }],
+                      [{ header: [2, 3, 4, false] }],
+                      ["bold", "italic", "underline", "strike"],
+                      [{ color: [] }, { background: [] }],
+                      [{ list: "ordered" }, { list: "bullet" }],
+                      [{ align: [] }],
+                      ["link", "clean"],
+                    ],
+                  }}
+                  formats={[
+                    "font",
+                    "size",
+                    "header",
+                    "bold",
+                    "italic",
+                    "underline",
+                    "strike",
+                    "color",
+                    "background",
+                    "list",
+                    "bullet",
+                    "align",
+                    "link",
+                  ]}
                 />
               </div>
 
@@ -845,14 +910,48 @@ const CreateProduct = () => {
                   Full Description
                 </label>
 
-                <textarea
-                  id="description"
-                  name="description"
+                <ReactQuill
+                  theme="snow"
                   value={formData.description}
-                  onChange={handleChange}
-                  rows={10}
-                  placeholder="Write a detailed description of the product..."
+                  onChange={(value) => {
+                    setFormData((previous) => ({
+                      ...previous,
+                      description: value,
+                    }));
+
+                    setError("");
+                    setSuccess("");
+                  }}
+                  placeholder="Write a detailed product description..."
+                  modules={{
+                    toolbar: [
+                      [{ font: Font.whitelist }],
+                      [{ size: Size.whitelist }],
+                      [{ header: [2, 3, 4, false] }],
+                      ["bold", "italic", "underline", "strike"],
+                      [{ color: [] }, { background: [] }],
+                      [{ list: "ordered" }, { list: "bullet" }],
+                      [{ align: [] }],
+                      ["link", "clean"],
+                    ],
+                  }}
+                  formats={[
+                    "font",
+                    "size",
+                    "header",
+                    "bold",
+                    "italic",
+                    "underline",
+                    "strike",
+                    "color",
+                    "background",
+                    "list",
+                    "bullet",
+                    "align",
+                    "link",
+                  ]}
                 />
+
               </div>
 
             </section>
@@ -1048,12 +1147,11 @@ const CreateProduct = () => {
 
                 <strong>
                   {images.length > 0
-                    ? `Image ${
-                        images.findIndex(
-                          (image) =>
-                            image.isPrimary
-                        ) + 1
-                      }`
+                    ? `Image ${images.findIndex(
+                      (image) =>
+                        image.isPrimary
+                    ) + 1
+                    }`
                     : "Not selected"}
                 </strong>
               </div>
@@ -1105,8 +1203,8 @@ const CreateProduct = () => {
                 <strong>
                   {formData.price
                     ? `₦${Number(
-                        formData.price
-                      ).toLocaleString()}`
+                      formData.price
+                    ).toLocaleString()}`
                     : "₦0"}
                 </strong>
               </div>
@@ -1126,13 +1224,13 @@ const CreateProduct = () => {
                 <strong
                   className={
                     formData.status ===
-                    "active"
+                      "active"
                       ? "status-active"
                       : "status-inactive"
                   }
                 >
                   {formData.status ===
-                  "active"
+                    "active"
                     ? "Active"
                     : "Inactive"}
                 </strong>

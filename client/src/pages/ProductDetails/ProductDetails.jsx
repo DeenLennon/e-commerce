@@ -7,6 +7,15 @@ import {
 } from "react-router-dom";
 
 import {
+    ToastContainer,
+    toast,
+} from "react-toastify";
+
+import "react-toastify/dist/ReactToastify.css";
+
+import DOMPurify from "dompurify";
+
+import {
     FiArrowLeft,
     FiCheck,
     FiChevronLeft,
@@ -104,7 +113,7 @@ const ProductDetails = () => {
         }
     };
 
-/*FORMAT PRICE*/
+    /*FORMAT PRICE*/
     const formatPrice = (price) => {
         return new Intl.NumberFormat(
             "en-NG",
@@ -251,7 +260,7 @@ const ProductDetails = () => {
 
     const isOutOfStock =
         product?.status ===
-            "out_of_stock" ||
+        "out_of_stock" ||
         stock <= 0;
 
 
@@ -300,7 +309,7 @@ const ProductDetails = () => {
             );
 
 
-            alert(
+            toast.success(
                 `${product.name} has been added to your cart.`
             );
 
@@ -312,7 +321,7 @@ const ProductDetails = () => {
             );
 
 
-            alert(
+            toast.error(
                 err?.response?.data?.message ||
                 "Unable to add product to cart."
             );
@@ -326,44 +335,39 @@ const ProductDetails = () => {
     /*
      * BUY NOW
      */
-    const handleBuyNow = async () => {
 
-        if (
-            !product ||
-            isOutOfStock
-        ) {
+    /*
+     * BUY NOW
+     */
+    const handleBuyNow = async () => {
+        if (!product || isOutOfStock) {
             return;
         }
 
-
         try {
-
             setBuyingNow(true);
-
 
             await addToCart(
                 product.id,
                 quantity
             );
 
-
+            // Navigate to the cart after success
             navigate("/cart");
 
         } catch (err) {
+            console.error("Buy now error:", err);
 
-            console.error(
-                "Buy now error:",
-                err
-            );
-
-
-            alert(
+            toast.error(
                 err?.response?.data?.message ||
-                "Unable to add product to cart."
+                "Unable to add product to cart.",
+                {
+                    position: "top-right",
+                    autoClose: 3000,
+                }
             );
 
         } finally {
-
             setBuyingNow(false);
         }
     };
@@ -524,6 +528,16 @@ const ProductDetails = () => {
     return (
         <>
             <Header />
+
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                pauseOnHover
+                theme="light"
+            />
 
             <main className="product-details-page">
 
@@ -688,10 +702,9 @@ const ProductDetails = () => {
                                                             index
                                                         )
                                                     }
-                                                    aria-label={`View product image ${
-                                                        index +
+                                                    aria-label={`View product image ${index +
                                                         1
-                                                    }`}
+                                                        }`}
                                                 >
 
                                                     <img
@@ -775,11 +788,10 @@ const ProductDetails = () => {
 
                             {/* STOCK */}
                             <div
-                                className={`product-stock ${
-                                    isOutOfStock
-                                        ? "product-stock--out"
-                                        : ""
-                                }`}
+                                className={`product-stock ${isOutOfStock
+                                    ? "product-stock--out"
+                                    : ""
+                                    }`}
                             >
 
                                 {isOutOfStock ? (
@@ -815,18 +827,21 @@ const ProductDetails = () => {
 
 
                             {/* SHORT DESCRIPTION */}
-                            {product.short_description && (
 
+                            {product.short_description ? (
+                                <div
+                                    className="product-info__short-description"
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(
+                                            product.short_description
+                                        ),
+                                    }}
+                                />
+                            ) : (
                                 <p className="product-info__short-description">
-
-                                    {
-                                        product.short_description
-                                    }
-
+                                    No short description is available for this product.
                                 </p>
-
                             )}
-
 
                             {/* QUANTITY */}
                             {!isOutOfStock && (
@@ -1014,29 +1029,24 @@ const ProductDetails = () => {
                         <div>
 
                             {product.description ? (
-
-                                <p>
-                                    {
-                                        product.description
-                                    }
-                                </p>
-
+                                <div
+                                    className="product-description-content"
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(
+                                            product.description
+                                        ),
+                                    }}
+                                />
                             ) : (
-
                                 <p>
-                                    No detailed
-                                    description is
-                                    available for this
-                                    product.
+                                    No detailed description is available for this product.
                                 </p>
-
                             )}
-
                         </div>
 
                     </section>
 
-                     {/* RECOMMENDED PRODUCTS WITH INFINITE SCROLL */}
+                    {/* RECOMMENDED PRODUCTS WITH INFINITE SCROLL */}
 
                     <RecommendedProducts product={product} />
 

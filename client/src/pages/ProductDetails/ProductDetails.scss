@@ -1455,3 +1455,63 @@
         line-height: 1.75;
     }
 }
+
+.product-description-content {
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+
+    h2 {
+        margin: 24px 0 12px;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.4;
+    }
+
+    h3 {
+        margin: 20px 0 10px;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    h4 {
+        margin: 16px 0 8px;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    p {
+        margin: 0 0 14px;
+    }
+
+    ul,
+    ol {
+        padding-left: 24px;
+        margin: 12px 0 18px;
+    }
+
+    li {
+        margin-bottom: 7px;
+    }
+
+    a {
+        color: #2563eb;
+        text-decoration: underline;
+        overflow-wrap: anywhere;
+    }
+
+    strong {
+        font-weight: 700;
+    }
+}
+
+@media (max-width: 600px) {
+    .product-description-content {
+        h2 {
+            font-size: 21px;
+        }
+
+        h3 {
+            font-size: 18px;
+        }
+    }
+}

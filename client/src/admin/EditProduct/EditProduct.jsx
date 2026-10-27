@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import ReactQuill, { Quill } from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+
 import {
   getProductById,
   updateProduct,
@@ -13,6 +16,39 @@ import "./EditProduct.scss";
 const API_BASE_URL =
   import.meta.env.VITE_API_URL?.replace("/api", "") ||
   "http://localhost:5000";
+
+
+/* Register available font families */
+const Font = Quill.import("formats/font");
+
+Font.whitelist = [
+  "arial",
+  "times-new-roman",
+  "georgia",
+  "verdana",
+  "tahoma",
+  "courier-new",
+];
+
+Quill.register(Font, true);
+
+/* Register available font sizes */
+const Size = Quill.import("attributors/style/size");
+
+Size.whitelist = [
+  "12px",
+  "14px",
+  "16px",
+  "18px",
+  "20px",
+  "24px",
+  "28px",
+  "32px",
+  "36px",
+];
+
+Quill.register(Size, true);
+
 
 const getImageUrl = (imageUrl) => {
   if (!imageUrl) {
@@ -61,11 +97,7 @@ const EditProduct = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  /*
-  |--------------------------------------------------------------------------
-  | LOAD PRODUCT
-  |--------------------------------------------------------------------------
-  */
+  /* LOAD PRODUCT */
 
   useEffect(() => {
     const loadData = async () => {
@@ -169,11 +201,7 @@ const EditProduct = () => {
     loadData();
   }, [id]);
 
-  /*
-  |--------------------------------------------------------------------------
-  | FORM CHANGE
-  |--------------------------------------------------------------------------
-  */
+  /* FORM CHANGE */
 
   const handleChange = (event) => {
     const {
@@ -200,69 +228,6 @@ const EditProduct = () => {
       setSuccess("");
     }
   };
-
-  /*
-  |--------------------------------------------------------------------------
-  | NEW IMAGE SELECTION
-  |--------------------------------------------------------------------------
-  */
-
-  // const handleImageChange = (event) => {
-  //   const selectedFiles = Array.from(
-  //     event.target.files || []
-  //   );
-
-  //   if (selectedFiles.length === 0) {
-  //     return;
-  //   }
-
-  //   const existingCount = images.length;
-  //   const pendingCount = newImages.length;
-
-  //   const remainingSlots =
-  //     10 - existingCount - pendingCount;
-
-  //   if (remainingSlots <= 0) {
-  //     setError(
-  //       "You can have a maximum of 10 product images."
-  //     );
-
-  //     event.target.value = "";
-  //     return;
-  //   }
-
-  //   const imageFiles = selectedFiles
-  //     .filter((file) =>
-  //       file.type.startsWith("image/")
-  //     )
-  //     .slice(0, remainingSlots);
-
-  //   if (imageFiles.length === 0) {
-  //     setError(
-  //       "Please select valid image files."
-  //     );
-
-  //     event.target.value = "";
-  //     return;
-  //   }
-
-  //   const preparedImages =
-  //     imageFiles.map((file) => ({
-  //       file,
-  //       preview:
-  //         URL.createObjectURL(file),
-  //     }));
-
-  //   setNewImages((previous) => [
-  //     ...previous,
-  //     ...preparedImages,
-  //   ]);
-
-  //   setError("");
-
-  //   event.target.value = "";
-  // };
-
 
   const handleImageChange = (event) => {
     const selectedFiles = Array.from(
@@ -320,10 +285,7 @@ const EditProduct = () => {
         preview:
           URL.createObjectURL(file),
 
-        /*
-         * New images are not primary by default.
-         * The user can select one below.
-         */
+        /* New images are not primary by default. The user can select one below. */
         isPrimary: false,
       }));
 
@@ -336,29 +298,7 @@ const EditProduct = () => {
   };
 
 
-  /*
-  |--------------------------------------------------------------------------
-  | REMOVE PENDING IMAGE
-  |--------------------------------------------------------------------------
-  */
-
-  // const removeNewImage = (index) => {
-  //   setNewImages((previous) => {
-  //     const imageToRemove =
-  //       previous[index];
-
-  //     if (imageToRemove?.preview) {
-  //       URL.revokeObjectURL(
-  //         imageToRemove.preview
-  //       );
-  //     }
-
-  //     return previous.filter(
-  //       (_, imageIndex) =>
-  //         imageIndex !== index
-  //     );
-  //   });
-  // };
+  /* REMOVE PENDING IMAGE */
 
   const removeNewImage = (index) => {
     setNewImages((previous) => {
@@ -377,11 +317,7 @@ const EditProduct = () => {
             imageIndex !== index
         );
 
-      /*
-       * If the removed image was primary,
-       * automatically make the first remaining
-       * new image primary.
-       */
+      /* If the removed image was primary, automatically make the first remaining new image primary. */
       if (
         imageToRemove?.isPrimary &&
         updatedImages.length > 0
@@ -404,76 +340,6 @@ const EditProduct = () => {
       return updatedImages;
     });
   };
-
-  /*
-  |--------------------------------------------------------------------------
-  | SET EXISTING IMAGE AS PRIMARY
-  |--------------------------------------------------------------------------
-  */
-
-  // const handleSetPrimary = async (
-  //   imageId
-  // ) => {
-  //   try {
-  //     setImageSaving(true);
-  //     setError("");
-  //     setSuccess("");
-
-  //     const token =
-  //       localStorage.getItem("token");
-
-  //     const response = await fetch(
-  //       `${API_BASE_URL}/api/products/${id}/images/${imageId}/primary`,
-  //       {
-  //         method: "PUT",
-  //         headers: token
-  //           ? {
-  //             Authorization: `Bearer ${token}`,
-  //           }
-  //           : {},
-  //         credentials: "include",
-  //       }
-  //     );
-
-  //     const data =
-  //       await response.json();
-
-  //     if (!response.ok) {
-  //       throw new Error(
-  //         data?.message ||
-  //         "Failed to set primary image."
-  //       );
-  //     }
-
-  //     setImages((previous) =>
-  //       previous.map((image) => ({
-  //         ...image,
-
-  //         is_primary:
-  //           Number(image.id) ===
-  //             Number(imageId)
-  //             ? 1
-  //             : 0,
-  //       }))
-  //     );
-
-  //     setSuccess(
-  //       "Primary image updated successfully."
-  //     );
-  //   } catch (error) {
-  //     console.error(
-  //       "Set primary image error:",
-  //       error
-  //     );
-
-  //     setError(
-  //       error.message ||
-  //       "Failed to set primary image."
-  //     );
-  //   } finally {
-  //     setImageSaving(false);
-  //   }
-  // };
 
   const handleSetPrimary = async (
     imageId
@@ -562,102 +428,7 @@ const EditProduct = () => {
     setSuccess("");
   };
 
-  /*
-  |--------------------------------------------------------------------------
-  | DELETE EXISTING IMAGE
-  |--------------------------------------------------------------------------
-  */
-
-  // const handleDeleteImage = async (
-  //   imageId
-  // ) => {
-  //   const imageToDelete =
-  //     images.find(
-  //       (image) =>
-  //         Number(image.id) ===
-  //         Number(imageId)
-  //     );
-
-  //   if (!imageToDelete) {
-  //     return;
-  //   }
-
-  //   if (
-  //     Number(imageToDelete.is_primary) ===
-  //     1
-  //   ) {
-  //     setError(
-  //       "You cannot delete the primary image. Set another image as primary first."
-  //     );
-
-  //     return;
-  //   }
-
-  //   const confirmed =
-  //     window.confirm(
-  //       "Are you sure you want to delete this image?"
-  //     );
-
-  //   if (!confirmed) {
-  //     return;
-  //   }
-
-  //   try {
-  //     setImageSaving(true);
-  //     setError("");
-  //     setSuccess("");
-
-  //     const token =
-  //       localStorage.getItem("token");
-
-  //     const response = await fetch(
-  //       `${API_BASE_URL}/api/products/${id}/images/${imageId}`,
-  //       {
-  //         method: "DELETE",
-  //         headers: token
-  //           ? {
-  //             Authorization: `Bearer ${token}`,
-  //           }
-  //           : {},
-  //         credentials: "include",
-  //       }
-  //     );
-
-  //     const data =
-  //       await response.json();
-
-  //     if (!response.ok) {
-  //       throw new Error(
-  //         data?.message ||
-  //         "Failed to delete image."
-  //       );
-  //     }
-
-  //     setImages((previous) =>
-  //       previous.filter(
-  //         (image) =>
-  //           Number(image.id) !==
-  //           Number(imageId)
-  //       )
-  //     );
-
-  //     setSuccess(
-  //       "Product image deleted successfully."
-  //     );
-  //   } catch (error) {
-  //     console.error(
-  //       "Delete image error:",
-  //       error
-  //     );
-
-  //     setError(
-  //       error.message ||
-  //       "Failed to delete image."
-  //     );
-  //   } finally {
-  //     setImageSaving(false);
-  //   }
-  // };
+  /* DELETE EXISTING IMAGE */
 
   const handleDeleteImage = async (
     imageId
@@ -674,9 +445,7 @@ const EditProduct = () => {
     }
 
     /*
-     * Never allow the current primary
-     * image to be deleted until another
-     * image becomes primary.
+     * Never allow the current primary image to be deleted until another image becomes primary.
      */
     if (
       Number(imageToDelete.is_primary) ===
@@ -748,66 +517,6 @@ const EditProduct = () => {
     }
   };
 
-  /*
-  |--------------------------------------------------------------------------
-  | UPLOAD NEW IMAGES
-  |--------------------------------------------------------------------------
-  */
-
-  // const uploadNewImages = async () => {
-  //   if (newImages.length === 0) {
-  //     return;
-  //   }
-
-  //   const formData = new FormData();
-
-  //   newImages.forEach((image) => {
-  //     formData.append(
-  //       "images",
-  //       image.file
-  //     );
-  //   });
-
-  //   /*
-  //    * If the product already has a primary
-  //    * image, the newly uploaded images do
-  //    * not become primary automatically.
-  //    */
-  //   formData.append(
-  //     "primary_image_index",
-  //     "-1"
-  //   );
-
-  //   const token =
-  //     localStorage.getItem("token");
-
-  //   const response = await fetch(
-  //     `${API_BASE_URL}/api/products/${id}/images`,
-  //     {
-  //       method: "POST",
-  //       headers: token
-  //         ? {
-  //           Authorization: `Bearer ${token}`,
-  //         }
-  //         : {},
-  //       body: formData,
-  //       credentials: "include",
-  //     }
-  //   );
-
-  //   const data =
-  //     await response.json();
-
-  //   if (!response.ok) {
-  //     throw new Error(
-  //       data?.message ||
-  //       "Failed to upload product images."
-  //     );
-  //   }
-
-  //   return data;
-  // };
-
   const uploadNewImages = async () => {
     if (newImages.length === 0) {
       return null;
@@ -862,185 +571,6 @@ const EditProduct = () => {
 
     return result;
   };
-
-  /*
-  |--------------------------------------------------------------------------
-  | SAVE PRODUCT
-  |--------------------------------------------------------------------------
-  */
-
-  // const handleSubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   try {
-  //     setSaving(true);
-  //     setError("");
-  //     setSuccess("");
-
-  //     const productData = {
-  //       ...formData,
-
-  //       category_id:
-  //         Number(formData.category_id),
-
-  //       price:
-  //         Number(formData.price),
-
-  //       compare_price:
-  //         formData.compare_price === ""
-  //           ? null
-  //           : Number(
-  //             formData.compare_price
-  //           ),
-
-  //       stock_quantity:
-  //         formData.stock_quantity === ""
-  //           ? 0
-  //           : Number(
-  //             formData.stock_quantity
-  //           ),
-
-  //       is_featured:
-  //         Boolean(formData.is_featured),
-  //     };
-
-  //     console.log(
-  //       "Updating product with:",
-  //       productData
-  //     );
-
-  //     /*
-  //      * Update product information.
-  //      */
-  //     const response =
-  //       await updateProduct(
-  //         id,
-  //         productData
-  //       );
-
-  //     console.log(
-  //       "Update product response:",
-  //       response
-  //     );
-
-  //     /*
-  //      * Upload newly selected images.
-  //      */
-  //     if (newImages.length > 0) {
-  //       setImageSaving(true);
-
-  //       await uploadNewImages();
-
-  //       /*
-  //        * Release blob URLs.
-  //        */
-  //       newImages.forEach((image) => {
-  //         if (image.preview) {
-  //           URL.revokeObjectURL(
-  //             image.preview
-  //           );
-  //         }
-  //       });
-
-  //       setNewImages([]);
-  //     }
-
-  //     /*
-  //      * Reload the product so that
-  //      * the latest images are displayed.
-  //      */
-  //     const refreshedResponse =
-  //       await getProductById(id);
-
-  //     const refreshedProduct =
-  //       refreshedResponse?.data;
-
-  //     if (refreshedProduct) {
-  //       setProduct(refreshedProduct);
-
-  //       setImages(
-  //         Array.isArray(
-  //           refreshedProduct.images
-  //         )
-  //           ? refreshedProduct.images
-  //           : []
-  //       );
-
-  //       setFormData({
-  //         category_id:
-  //           refreshedProduct.category_id ??
-  //           "",
-
-  //         name:
-  //           refreshedProduct.name ??
-  //           "",
-
-  //         slug:
-  //           refreshedProduct.slug ??
-  //           "",
-
-  //         sku:
-  //           refreshedProduct.sku ??
-  //           "",
-
-  //         short_description:
-  //           refreshedProduct.short_description ??
-  //           "",
-
-  //         description:
-  //           refreshedProduct.description ??
-  //           "",
-
-  //         price:
-  //           refreshedProduct.price ??
-  //           "",
-
-  //         compare_price:
-  //           refreshedProduct.compare_price ??
-  //           "",
-
-  //         stock_quantity:
-  //           refreshedProduct.stock_quantity ??
-  //           "",
-
-  //         status:
-  //           refreshedProduct.status ??
-  //           "active",
-
-  //         is_featured:
-  //           Boolean(
-  //             refreshedProduct.is_featured
-  //           ),
-  //       });
-  //     } else if (response?.data) {
-  //       setProduct(response.data);
-  //     }
-
-  //     setSuccess(
-  //       response?.message ||
-  //       "Product updated successfully."
-  //     );
-
-  //     window.scrollTo({
-  //       top: 0,
-  //       behavior: "smooth",
-  //     });
-  //   } catch (error) {
-  //     console.error(
-  //       "Failed to update product:",
-  //       error
-  //     );
-
-  //     setError(
-  //       error.response?.data?.message ||
-  //       error.message ||
-  //       "Failed to update product"
-  //     );
-  //   } finally {
-  //     setSaving(false);
-  //     setImageSaving(false);
-  //   }
-  // };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -1338,11 +868,7 @@ const EditProduct = () => {
     );
   }
 
-  /*
-  |--------------------------------------------------------------------------
-  | PRODUCT NOT FOUND
-  |--------------------------------------------------------------------------
-  */
+  /* PRODUCT NOT FOUND */
 
   if (!product) {
     return (
@@ -1945,43 +1471,105 @@ const EditProduct = () => {
                   Short Description
                 </label>
 
-                <textarea
-                  id="short_description"
-                  name="short_description"
-                  value={
-                    formData.short_description
-                  }
-                  onChange={
-                    handleChange
-                  }
-                  rows={4}
-                  placeholder="Write a short summary of the product..."
+                <ReactQuill
+                  theme="snow"
+                  value={formData.short_description}
+                  onChange={(value) => {
+                    setFormData((previous) => ({
+                      ...previous,
+                      short_description: value,
+                    }));
+
+                    setError("");
+                    setSuccess("");
+                  }}
+                  placeholder="Write a brief product summary..."
+                  modules={{
+                    toolbar: [
+                      [{ font: Font.whitelist }],
+                      [{ size: Size.whitelist }],
+                      [{ header: [2, 3, 4, false] }],
+                      ["bold", "italic", "underline", "strike"],
+                      [{ color: [] }, { background: [] }],
+                      [{ list: "ordered" }, { list: "bullet" }],
+                      [{ align: [] }],
+                      ["link", "clean"],
+                    ],
+                  }}
+                  formats={[
+                    "font",
+                    "size",
+                    "header",
+                    "bold",
+                    "italic",
+                    "underline",
+                    "strike",
+                    "color",
+                    "background",
+                    "list",
+                    "bullet",
+                    "align",
+                    "link",
+                  ]}
                 />
 
                 <small>
-                  A brief description shown
-                  in product listings.
+                  A brief, formatted description shown in product listings.
                 </small>
               </div>
 
-              <div className="edit-form-field">
+
+              <div className="edit-form-field edit-description-field">
                 <label htmlFor="description">
                   Full Description
                 </label>
+                <ReactQuill
+                  theme="snow"
+                  value={formData.description}
+                  onChange={(value) => {
+                    setFormData((previous) => ({
+                      ...previous,
+                      description: value,
+                    }));
 
-                <textarea
-                  id="description"
-                  name="description"
-                  value={
-                    formData.description
-                  }
-                  onChange={
-                    handleChange
-                  }
-                  rows={10}
-                  placeholder="Write a detailed description of the product..."
+                    setError("");
+                    setSuccess("");
+                  }}
+                  placeholder="Write a detailed product description..."
+                  modules={{
+                    toolbar: [
+                      [{ font: Font.whitelist }],
+                      [{ size: Size.whitelist }],
+                      [{ header: [2, 3, 4, false] }],
+                      ["bold", "italic", "underline", "strike"],
+                      [{ color: [] }, { background: [] }],
+                      [{ list: "ordered" }, { list: "bullet" }],
+                      [{ align: [] }],
+                      ["link", "clean"],
+                    ],
+                  }}
+                  formats={[
+                    "font",
+                    "size",
+                    "header",
+                    "bold",
+                    "italic",
+                    "underline",
+                    "strike",
+                    "color",
+                    "background",
+                    "list",
+                    "bullet",
+                    "align",
+                    "link",
+                  ]}
                 />
+
+                <small>
+                  Your full product description will be saved when you click Save Changes.
+                </small>
               </div>
+
             </section>
 
             {/* PRICING */}
